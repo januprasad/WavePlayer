@@ -11,33 +11,39 @@ public class Album implements Parcelable {
     /**
      * 专辑Id
      */
-    public int mAlbumId;
+    private int mAlbumId;
 
     /**
      * 专辑名称
      */
-    public String mAlbumName;
+    private String mAlbumName;
 
     /**
      * 专辑的艺术家名称
      */
-    public String mArtistName;
+    private String mArtistName;
+
+    /**
+     * 专辑艺术家Id
+     */
+    private int mArtistId;
 
     /**
      * 专辑年份
      */
-    public int mAlbumYear;
+    private int mAlbumYear;
 
     /**
      * 专辑封面
      */
-    public String mAlbumArt;
+    private String mAlbumArt;
 
     public Album(final int albumId, final String albumName, final String artistName,
-                 final int albumYear, final String albumArt) {
+                 final int artistId, final int albumYear, final String albumArt) {
         this.mAlbumId = albumId;
         this.mAlbumName = albumName;
         this.mArtistName = artistName;
+        this.mArtistId = artistId;
         this.mAlbumYear = albumYear;
         this.mAlbumArt = albumArt;
     }
@@ -46,6 +52,7 @@ public class Album implements Parcelable {
         mAlbumId = source.readInt();
         mAlbumName = source.readString();
         mArtistName = source.readString();
+        mArtistId = source.readInt();
         mAlbumYear = source.readInt();
         mAlbumArt = source.readString();
     }
@@ -67,6 +74,7 @@ public class Album implements Parcelable {
         parcel.writeInt(mAlbumId);
         parcel.writeString(mAlbumName);
         parcel.writeString(mArtistName);
+        parcel.writeInt(mArtistId);
         parcel.writeInt(mAlbumYear);
         parcel.writeString(mAlbumArt);
     }
@@ -99,5 +107,9 @@ public class Album implements Parcelable {
 
     public String getmAlbumArt() {
         return mAlbumArt;
+    }
+
+    public int getmArtistId() {
+        return mArtistId;
     }
 }

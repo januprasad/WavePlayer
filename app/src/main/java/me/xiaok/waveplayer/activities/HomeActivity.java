@@ -71,12 +71,15 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         switch (menuItem.getItemId()) {
             case R.id.nav_song:
                 mCurrentFragment = new SongsFragment();
+                mToolBar.setTitle(R.string.nav_music);
                 break;
             case R.id.nav_artist:
                 mCurrentFragment = new ArtistsFragment();
+                mToolBar.setTitle(R.string.nav_artist);
                 break;
             case R.id.nav_album:
                 mCurrentFragment = new AlbumsFragment();
+                mToolBar.setTitle(R.string.nav_album);
                 break;
             case R.id.nav_quit:
                 finish();

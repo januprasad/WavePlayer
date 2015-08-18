@@ -9,9 +9,11 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import me.xiaok.waveplayer.LibManager;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.LogUtils;
+import me.xiaok.waveplayer.utils.MusicUtil;
 
 /**
  * Created by GeeKaven on 15/8/18.
@@ -46,10 +48,10 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
         mSongTitle.setText(s.getmSongName());
         mSongArtist.setText(s.getmArtistName());
-        mSongDuration.setText(String.valueOf(s.getmDuration()));
+        mSongDuration.setText(MusicUtil.durationToString(s.getmDuration()));
 
         if (flag) {
-            mSongImage.setImageURI(Uri.parse("res:///" + R.mipmap.text_img));
+            mSongImage.setImageURI(Uri.parse("file://" + LibManager.getSongAlbum(s).get(0).getmAlbumArt()));
         } else {
             mSongImage.setVisibility(View.GONE);
             mRoot.setPadding(12,5,12,5);

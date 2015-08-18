@@ -52,6 +52,7 @@ public class LibManager {
             MediaStore.Audio.Albums._ID,
             MediaStore.Audio.Albums.ALBUM,
             MediaStore.Audio.Albums.ARTIST,
+            MediaStore.Audio.Media.ARTIST_ID,
             MediaStore.Audio.Albums.LAST_YEAR,
             MediaStore.Audio.Albums.ALBUM_ART,
     };
@@ -160,6 +161,7 @@ public class LibManager {
                     (cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
                             ? context.getString(R.string.no_artist)
                             : cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
+                    cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)),
                     cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR)),
                     cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART))
             );
@@ -257,5 +259,36 @@ public class LibManager {
         }
 
         return songs;
+    }
+
+    /**
+     * 获取歌曲的专辑,每首歌只有一个专辑
+     * @param song
+     * @return
+     */
+    public static ArrayList<Album> getSongAlbum(Song song) {
+        ArrayList<Album> albums = new ArrayList<>();
+        for (Album a : mAlbumLib) {
+            if (a.getmAlbumId() == song.getmAlbumId()) {
+                albums.add(a);
+                break;
+            }
+        }
+        return albums;
+    }
+
+    /**
+     * 获取歌手的所有专辑
+     * @param artist
+     * @return
+     */
+    public static ArrayList<Album> getArtistAlbums(Artist artist) {
+        ArrayList<Album> albums = new ArrayList<>();
+        for (Album a : mAlbumLib) {
+            if (a.getmArtistId() == artist.getmArtistId()) {
+                albums.add(a);
+            }
+        }
+        return albums;
     }
 }

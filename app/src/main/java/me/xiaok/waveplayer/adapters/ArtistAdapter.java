@@ -13,10 +13,12 @@ import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 
+import me.xiaok.waveplayer.LibManager;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.activities.ArtistActivity;
 import me.xiaok.waveplayer.models.Artist;
 import me.xiaok.waveplayer.utils.LogUtils;
+import me.xiaok.waveplayer.utils.MusicUtil;
 import me.xiaok.waveplayer.utils.Navigate;
 
 /**
@@ -83,7 +85,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
             ref = artist;
             mArtistName.setText(artist.getmArtistName());
             mAlbumNum.setText(artist.getmAlbumNum() + " album");
-            mArtistImg.setImageURI(Uri.parse("res:///" + R.mipmap.text_img));
+            mArtistImg.setImageURI(Uri.parse("file://" + LibManager.getArtistAlbums(artist).get(0).getmAlbumArt()));
         }
 
         @Override
