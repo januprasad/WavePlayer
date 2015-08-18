@@ -1,0 +1,181 @@
+package me.xiaok.waveplayer.models.viewholders;
+
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.facebook.common.executors.CallerThreadExecutor;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.DataSource;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.core.ImagePipeline;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
+
+import me.xiaok.waveplayer.R;
+import me.xiaok.waveplayer.WaveApplication;
+import me.xiaok.waveplayer.activities.AlbumActivity;
+import me.xiaok.waveplayer.models.Album;
+import me.xiaok.waveplayer.utils.LogUtils;
+import me.xiaok.waveplayer.utils.Navigate;
+
+/**
+ * Created by GeeKaven on 15/8/18.
+ */
+public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, Palette.PaletteAsyncListener{
+
+    private static final String TAG = "AlbumViewHolder";
+    private static final int BACKGROUND_COLOR = 0;
+    private static final int TITLE_COLOR = 1;
+    private static final int SUB_TITLE_COLOR = 2;
+    //每一个ViewHoler都保存着背景色，标题色，副标题色
+    private int[] colorCache = null;
+    //默认背景色，标题色，副标题色
+    private int defaultBackgroundColor;
+    private int defaultTitleColor;
+    private int defaultSubTitleColor;
+
+    private AsyncTask<Bitmap, Void, Palette> mPaletteTask;
+
+    private View itemView;
+    private FrameLayout mRoot;
+    private SimpleDraweeView mAlbumImg;
+    private ImageView mClickImg;
+    private TextView mAlbumName;
+    private TextView mArtistName;
+    private Album ref;
+
+    public AlbumViewHolder(View itemView) {
+        super(itemView);
+
+        this.itemView = itemView;
+
+        defaultBackgroundColor = itemView.getResources().getColor(R.color.grid_default_background);
+        defaultTitleColor = itemView.getResources().getColor(R.color.grid_default_title);
+        defaultSubTitleColor = itemView.getResources().getColor(R.color.grid_default_subtitle);
+
+        mRoot = (FrameLayout) itemView.findViewById(R.id.root);
+        mAlbumImg = (SimpleDraweeView) itemView.findViewById(R.id.album_img);
+        mClickImg = (ImageView) itemView.findViewById(R.id.click_more);
+        mAlbumName = (TextView) itemView.findViewById(R.id.album_name);
+        mArtistName = (TextView) itemView.findViewById(R.id.album_artist);
+        mAlbumImg.setAspectRatio(1.0f);
+
+        mRoot.setOnClickListener(this);
+        mClickImg.setOnClickListener(this);
+    }
+
+    /**
+     * 更新ViewHolder
+     * @param album
+     */
+    public void updateViewHolder(Album album) {
+        if (mPaletteTask!=null&&!mPaletteTask.isCancelled())
+            mPaletteTask.cancel(true);
+
+        ref = album;
+
+        mRoot.setBackgroundColor(defaultBackgroundColor);
+        mAlbumName.setTextColor(defaultTitleColor);
+        mArtistName.setTextColor(defaultSubTitleColor);
+
+        mAlbumName.setText(album.getmAlbumName());
+        mArtistName.setText(album.getmArtistName());
+
+        ImageRequest request = ImageRequestBuilder
+                .newBuilderWithSource(Uri.parse("file://" + album.getmAlbumArt()))
+                .setProgressiveRenderingEnabled(true)
+                .build();
+        if (colorCache == null) {
+            //当colorCache未初始化时，通过ImagePipeline来获取到图片的Bitmap
+            //然后运用Palette
+            ImagePipeline imagePipeline = Fresco.getImagePipeline();
+            DataSource<CloseableReference<CloseableImage>>
+                    dataSource = imagePipeline.fetchDecodedImage(request, WaveApplication.getContext());
+            dataSource.subscribe(new BaseBitmapDataSubscriber() {
+                @Override
+                protected void onNewResultImpl(Bitmap bitmap) {
+                    if (colorCache == null) {
+                        mPaletteTask = Palette.from(bitmap).generate(AlbumViewHolder.this);
+                    }
+                }
+
+                @Override
+                protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+
+                }
+            }, CallerThreadExecutor.getInstance());
+        } else {
+            mRoot.setBackgroundColor(colorCache[BACKGROUND_COLOR]);
+            mAlbumName.setTextColor(colorCache[TITLE_COLOR]);
+            mArtistName.setTextColor(colorCache[SUB_TITLE_COLOR]);
+        }
+        DraweeController controller = Fresco.newDraweeControllerBuilder()
+                .setImageRequest(request)
+                .setOldController(mAlbumImg.getController())
+                .build();
+        mAlbumImg.setController(controller);
+    }
+
+    @Override
+    public void onGenerated(Palette palette) {
+        int bgColor = defaultBackgroundColor;
+        int titleColor = defaultTitleColor;
+        int subTitleColor = defaultSubTitleColor;
+
+        if (palette.getVibrantSwatch()!=null) {
+            bgColor = palette.getVibrantColor(0);
+            titleColor = palette.getVibrantSwatch().getTitleTextColor();
+            subTitleColor = palette.getVibrantSwatch().getBodyTextColor();
+        } else if (palette.getLightVibrantSwatch()!=null) {
+            bgColor = palette.getLightVibrantColor(0);
+            titleColor = palette.getLightVibrantSwatch().getTitleTextColor();
+            subTitleColor = palette.getLightVibrantSwatch().getBodyTextColor();
+        } else if (palette.getDarkVibrantSwatch()!=null) {
+            bgColor = palette.getDarkVibrantColor(0);
+            titleColor = palette.getDarkVibrantSwatch().getTitleTextColor();
+            subTitleColor = palette.getDarkVibrantSwatch().getBodyTextColor();
+        } else if (palette.getMutedSwatch()!=null) {
+            bgColor = palette.getMutedColor(0);
+            titleColor = palette.getMutedSwatch().getTitleTextColor();
+            subTitleColor = palette.getMutedSwatch().getBodyTextColor();
+        } else if (palette.getLightMutedSwatch()!=null) {
+            bgColor = palette.getLightMutedColor(0);
+            titleColor = palette.getLightMutedSwatch().getTitleTextColor();
+            subTitleColor = palette.getLightMutedSwatch().getBodyTextColor();
+        } else if (palette.getDarkMutedSwatch()!=null) {
+            bgColor = palette.getDarkMutedColor(0);
+            titleColor = palette.getDarkMutedSwatch().getTitleTextColor();
+            subTitleColor = palette.getDarkMutedSwatch().getBodyTextColor();
+        }
+
+        colorCache = new int[] {bgColor, titleColor, subTitleColor};
+
+        mRoot.setBackgroundColor(bgColor);
+        mAlbumName.setTextColor(titleColor);
+        mArtistName.setTextColor(subTitleColor);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.click_more:
+                LogUtils.v(TAG, "more click");
+                break;
+            case R.id.root:
+                LogUtils.v(TAG, ref.toString());
+                Navigate.to(itemView.getContext(), AlbumActivity.class, AlbumActivity.EXTRA_ALBUM, ref);
+                break;
+        }
+    }
+}

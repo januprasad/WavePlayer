@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">WavePlayer</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="image_description">image</string>
+
+    <!-- Menu -->
+    <string name="nav_music">本地音乐</string>
+    <string name="nav_artist">艺术家</string>
+    <string name="nav_album">专辑</string>
+    <string name="nav_quit">退出</string>
+
+    <string name="no_artist">Unknow</string>
+    <string name="no_album">0 album</string>
+</resources>
