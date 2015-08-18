@@ -13,7 +13,7 @@ import me.xiaok.waveplayer.LibManager;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.LogUtils;
-import me.xiaok.waveplayer.utils.MusicUtil;
+import me.xiaok.waveplayer.utils.MusicUtils;
 
 /**
  * Created by GeeKaven on 15/8/18.
@@ -48,7 +48,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
         mSongTitle.setText(s.getmSongName());
         mSongArtist.setText(s.getmArtistName());
-        mSongDuration.setText(MusicUtil.durationToString(s.getmDuration()));
+        mSongDuration.setText(MusicUtils.durationToString(s.getmDuration()));
 
         if (flag) {
             mSongImage.setImageURI(Uri.parse("file://" + LibManager.getSongAlbum(s).get(0).getmAlbumArt()));

@@ -291,4 +291,14 @@ public class LibManager {
         }
         return albums;
     }
+
+    public static ArrayList<Song> getArtistSong(Artist artist) {
+        ArrayList<Song> songs = new ArrayList<>();
+        for (Song s : mSongLib) {
+            if (s.getmArtistId() == artist.getmArtistId()) {
+                songs.add(s);
+            }
+        }
+        return songs;
+    }
 }

@@ -1,5 +1,7 @@
 package me.xiaok.waveplayer.models.viewholders;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -45,6 +47,10 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private int defaultTitleColor;
     private int defaultSubTitleColor;
 
+    private ObjectAnimator backgroundAnimator;
+    private ObjectAnimator titleAnimator;
+    private ObjectAnimator subTitleAnimator;
+
     private AsyncTask<Bitmap, Void, Palette> mPaletteTask;
 
     private View itemView;
@@ -80,10 +86,23 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
      * @param album
      */
     public void updateViewHolder(Album album) {
-        if (mPaletteTask!=null&&!mPaletteTask.isCancelled())
+        if (mPaletteTask!=null && !mPaletteTask.isCancelled())
             mPaletteTask.cancel(true);
 
         ref = album;
+
+        if (backgroundAnimator != null) {
+            backgroundAnimator.setDuration(0);
+            backgroundAnimator.cancel();
+        }
+        if (titleAnimator != null) {
+            titleAnimator.setDuration(0);
+            titleAnimator.cancel();
+        }
+        if (subTitleAnimator != null) {
+            subTitleAnimator.setDuration(0);
+            subTitleAnimator.cancel();
+        }
 
         mRoot.setBackgroundColor(defaultBackgroundColor);
         mAlbumName.setTextColor(defaultTitleColor);
@@ -116,9 +135,10 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 }
             }, CallerThreadExecutor.getInstance());
         } else {
-            mRoot.setBackgroundColor(colorCache[BACKGROUND_COLOR]);
-            mAlbumName.setTextColor(colorCache[TITLE_COLOR]);
-            mArtistName.setTextColor(colorCache[SUB_TITLE_COLOR]);
+
+            backgroundAnimator.setDuration(300).start();
+            titleAnimator.setDuration(300).start();
+            subTitleAnimator.setDuration(300).start();
         }
         DraweeController controller = Fresco.newDraweeControllerBuilder()
                 .setImageRequest(request)
@@ -161,9 +181,42 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
         colorCache = new int[] {bgColor, titleColor, subTitleColor};
 
-        mRoot.setBackgroundColor(bgColor);
-        mAlbumName.setTextColor(titleColor);
-        mArtistName.setTextColor(subTitleColor);
+        if (backgroundAnimator != null) {
+            backgroundAnimator.setDuration(0);
+            backgroundAnimator.cancel();
+        }
+        if (titleAnimator != null) {
+            titleAnimator.setDuration(0);
+            titleAnimator.cancel();
+        }
+        if (subTitleAnimator != null) {
+            subTitleAnimator.setDuration(0);
+            subTitleAnimator.cancel();
+        }
+
+        backgroundAnimator = ObjectAnimator.ofObject(
+                mRoot,
+                "backgroundColor",
+                new ArgbEvaluator(),
+                defaultBackgroundColor,
+                bgColor);
+        titleAnimator = ObjectAnimator.ofObject(
+                mAlbumName,
+                "textColor",
+                new ArgbEvaluator(),
+                defaultTitleColor,
+                titleColor);
+        subTitleAnimator = ObjectAnimator.ofObject(
+                mArtistName,
+                "textColor",
+                new ArgbEvaluator(),
+                defaultSubTitleColor,
+                subTitleColor);
+
+        backgroundAnimator.setDuration(300).start();
+        titleAnimator.setDuration(300).start();
+        subTitleAnimator.setDuration(300).start();
+
     }
 
     @Override

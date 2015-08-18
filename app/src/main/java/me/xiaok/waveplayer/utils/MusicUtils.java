@@ -3,7 +3,7 @@ package me.xiaok.waveplayer.utils;
 /**
  * Created by GeeKaven on 15/8/17.
  */
-public class MusicUtil {
+public class MusicUtils {
 
     /**
      * 将时长转化成 xx:xx:xx的String形式

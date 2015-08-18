@@ -1,19 +1,26 @@
 package me.xiaok.waveplayer.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.facebook.drawee.view.SimpleDraweeView;
+
+import java.util.ArrayList;
+
+import me.xiaok.waveplayer.LibManager;
 import me.xiaok.waveplayer.R;
-import me.xiaok.waveplayer.adapters.SongAdapter;
+import me.xiaok.waveplayer.adapters.ArtistDetailAdapter;
+import me.xiaok.waveplayer.models.Album;
 import me.xiaok.waveplayer.models.Artist;
+import me.xiaok.waveplayer.models.Song;
 
 /**
  * 歌手详情Activity
@@ -25,12 +32,16 @@ import me.xiaok.waveplayer.models.Artist;
 public class ArtistActivity extends BaseActivity implements View.OnClickListener {
 
     public static final String EXTRA_ALBUM = "artist_detail";
+    public static final String TAG = "ArtistActivity";
     private Artist mArtist;
 
     private RecyclerView mList;
     private FloatingActionButton mFabPlay;
-    private SongAdapter mAdapter;
-    private LayoutManager mLayoutManager;
+    private ArtistDetailAdapter mAdapter;
+    private GridLayoutManager mLayoutManager;
+
+    private ArrayList<Song> mSongList;
+    private ArrayList<Album> mAlbumList;
 
     @Override
     protected int getLayoutResource() {
@@ -43,6 +54,9 @@ public class ArtistActivity extends BaseActivity implements View.OnClickListener
 
         Intent intent = getIntent();
         mArtist = intent.getExtras().getParcelable(EXTRA_ALBUM);
+
+        mAlbumList = LibManager.getArtistAlbums(mArtist);
+        mSongList = LibManager.getArtistSong(mArtist);
 
         setupAdapter();
         setupInstance();
@@ -65,7 +79,22 @@ public class ArtistActivity extends BaseActivity implements View.OnClickListener
     }
 
     private void setupAdapter() {
-        mLayoutManager = new LinearLayoutManager(this);
+        mAdapter = new ArtistDetailAdapter(this, mAlbumList, mSongList);
+        mLayoutManager = new GridLayoutManager(this, 2);
+        GridLayoutManager.SpanSizeLookup spanSizeLookup = new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (mAdapter.getItemViewType(position) == ArtistDetailAdapter.HEAD_VIEW)
+                    return 2;
+                else if (mAdapter.getItemViewType(position) == ArtistDetailAdapter.SONG_VIEW)
+                    return 2;
+                else
+                    return 1;
+
+            }
+        };
+        spanSizeLookup.setSpanIndexCacheEnabled(true);
+        mLayoutManager.setSpanSizeLookup(spanSizeLookup);
     }
 
     /**
@@ -77,10 +106,12 @@ public class ArtistActivity extends BaseActivity implements View.OnClickListener
 
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        //collapsingToolbar.setTitle(mAlbum.getmAlbumName());
+        collapsingToolbar.setTitle(mArtist.getmArtistName());
 
+        mList.setLayoutManager(mLayoutManager);
+        mList.setAdapter(mAdapter);
 
-
+        mFabPlay.setOnClickListener(this);
         loadBackDrop();
     }
 
@@ -88,8 +119,8 @@ public class ArtistActivity extends BaseActivity implements View.OnClickListener
      * 加载专辑图片
      */
     private void loadBackDrop() {
-//        SimpleDraweeView backDrop = (SimpleDraweeView) findViewById(R.id.backdrop);
-//        backDrop.setImageURI(Uri.parse("file://" + mAlbum.getmAlbumArt()));
+        SimpleDraweeView backDrop = (SimpleDraweeView) findViewById(R.id.backdrop);
+        backDrop.setImageURI(Uri.parse("res:///" + R.mipmap.text_img));
     }
 
     @Override

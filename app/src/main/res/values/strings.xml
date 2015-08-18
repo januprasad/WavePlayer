@@ -13,4 +13,6 @@
 
     <string name="no_artist">Unknow</string>
     <string name="no_album">0 album</string>
+    <string name="album">Album</string>
+    <string name="song">Song</string>
 </resources>

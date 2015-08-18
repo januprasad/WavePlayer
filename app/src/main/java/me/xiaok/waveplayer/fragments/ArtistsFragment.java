@@ -3,6 +3,7 @@ package me.xiaok.waveplayer.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -21,7 +22,7 @@ public class ArtistsFragment extends Fragment {
 
     private RecyclerView mList;
     private ArtistAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private GridLayoutManager mLayoutManager;
 
     @Nullable
     @Override
@@ -34,7 +35,7 @@ public class ArtistsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAdapter = new ArtistAdapter(LibManager.getArtists());
-        mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        mLayoutManager = new GridLayoutManager(getActivity(),2);
     }
 
     @Override

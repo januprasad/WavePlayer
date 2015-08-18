@@ -13,7 +13,7 @@
         android:layout_width="@dimen/list_item_icon_height"
         android:layout_height="@dimen/list_item_icon_height"
         android:layout_centerVertical="true"
-        android:layout_margin="@dimen/global_margin"
+        android:layout_margin="@dimen/list_item_icon_margin"
         fresco:fadeDuration="300"
         fresco:actualImageScaleType="centerInside"
         fresco:backgroundImage="@android:color/holo_blue_light"
