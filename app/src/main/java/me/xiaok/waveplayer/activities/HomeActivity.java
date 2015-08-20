@@ -25,7 +25,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private NavigationView mNavigationView;
     //当前的Fragment
     private Fragment mCurrentFragment;
-    private View mMiniPlayer;
+    private Fragment mMiniPlayer;
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_home;
@@ -61,7 +61,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void setupInstance() {
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView)findViewById(R.id.nav_view);
-        mMiniPlayer = findViewById(R.id.mini_player);
+        mMiniPlayer = getSupportFragmentManager().findFragmentById(R.id.mini_player);
         mNavigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -97,4 +97,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void transactionTo(Fragment fragment) {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
     }
+
+
 }

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/grid_default_background"
-    android:foreground="?attr/selectableItemBackground"
+    android:foreground="?selectableItemBackground"
     android:layout_margin="@dimen/grid_margin">
 
     <RelativeLayout

@@ -53,7 +53,8 @@ public class ArtistDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 ((AlbumViewHolder)holder).updateViewHolder(mAlbumList.get(position - 1));
                 break;
             case SONG_VIEW:
-                ((SongViewHolder)holder).updateViewHolder(mSongList.get(position - mAlbumList.size() - 2), false);
+                ((SongViewHolder)holder).updateViewHolder(mSongList.get(position - mAlbumList.size() - 2),
+                        false, position - mAlbumList.size() - 2);
                 break;
         }
     }
@@ -68,8 +69,10 @@ public class ArtistDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 return new AlbumViewHolder(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_album, parent, false));
             case SONG_VIEW:
-                return new SongViewHolder(LayoutInflater.from(parent.getContext())
+                SongViewHolder holder = new SongViewHolder(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_song, parent, false));
+                holder.setSongList(mSongList);
+                return holder;
         }
         return null;
     }

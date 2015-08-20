@@ -40,7 +40,7 @@ public class SongsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mList = (RecyclerView)view.findViewById(R.id.list);
-        mList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mList.setLayoutManager(mLayoutManager);
 
         mList.setAdapter(mAdapter);
         super.onViewCreated(view, savedInstanceState);

@@ -18,6 +18,7 @@ public class WaveApplication extends Application {
         super.onCreate();
         mContext = getApplicationContext();
         Fresco.initialize(getApplicationContext());
+        PlayerController.startService(getApplicationContext());
     }
 
     public static Context getContext() {

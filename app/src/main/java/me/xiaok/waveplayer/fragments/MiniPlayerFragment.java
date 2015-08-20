@@ -1,5 +1,8 @@
 package me.xiaok.waveplayer.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,6 +16,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.models.Song;
 
@@ -60,6 +64,27 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.root:
+                //转向NowPlayingActivity
+                break;
+            case R.id.mini_play:
+                //播放与暂停切换
+                PlayerController.togglePlay();
+                break;
+            case R.id.mini_next:
+                //下一首
+                PlayerController.next();
+                break;
+        }
+    }
 
+    public static class Listener extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("")) {
+
+            }
+        }
     }
 }

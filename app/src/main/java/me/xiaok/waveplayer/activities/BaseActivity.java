@@ -1,5 +1,8 @@
 package me.xiaok.waveplayer.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +19,13 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected AppBarLayout mAppBar;
     protected Toolbar mToolBar;
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            update();
+            updateMiniPlayer();
+        }
+    };
 
     public void toolBarClick() {}
 
@@ -50,4 +60,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     abstract protected int getLayoutResource();
+
+    public void update() {}
+    public void updateMiniPlayer() {};
 }

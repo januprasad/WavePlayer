@@ -67,7 +67,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:background="?selectableItemBackgroundBorderless"
-        android:src="@mipmap/ic_dots_vertical_grey600_18dp"
+        android:src="@mipmap/ic_dots_vertical_black_18dp"
         android:contentDescription="@string/image_description"/>
 
 </RelativeLayout>

@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:name=".WaveApplication"
@@ -21,6 +22,16 @@
         </activity>
         <activity android:name=".activities.AlbumActivity"/>
         <activity android:name=".activities.ArtistActivity"/>
-    </application>
+        <activity android:name=".activities.NowPlayingMusic"/>
 
+        <!-- Player Service -->
+        <service android:name=".PlayerService"
+            android:process=":player"
+            android:exported="false"/>
+
+        <!-- Broadcast Receiver -->
+        <receiver android:name=".PlayerService$Listener"
+            android:process=":player"
+            android:exported="false"/>
+    </application>
 </manifest>

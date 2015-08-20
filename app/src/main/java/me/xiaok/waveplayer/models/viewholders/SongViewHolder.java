@@ -1,5 +1,7 @@
 package me.xiaok.waveplayer.models.viewholders;
 
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -9,11 +11,18 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import me.xiaok.waveplayer.LibManager;
+import me.xiaok.waveplayer.Player;
+import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
+import me.xiaok.waveplayer.activities.NowPlayingMusic;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.LogUtils;
 import me.xiaok.waveplayer.utils.MusicUtils;
+import me.xiaok.waveplayer.utils.Navigate;
 
 /**
  * Created by GeeKaven on 15/8/18.
@@ -29,6 +38,8 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     private ImageView mClickMore;
 
     private Song ref;
+    private int position;
+    private ArrayList<Song> mSongList;
 
     public SongViewHolder(View itemView) {
         super(itemView);
@@ -43,8 +54,9 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         mClickMore.setOnClickListener(this);
     }
 
-    public void updateViewHolder(Song s, boolean flag) {
+    public void updateViewHolder(Song s, boolean flag, int pos) {
         ref = s;
+        position = pos;
 
         mSongTitle.setText(s.getmSongName());
         mSongArtist.setText(s.getmArtistName());
@@ -59,6 +71,14 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     }
 
     /**
+     * 设置本歌曲所在的歌曲列表
+     * @param songList
+     */
+    public void setSongList(ArrayList songList) {
+        mSongList = songList;
+    }
+
+    /**
      * 处理点击Item点击事件
      * @param view
      */
@@ -67,6 +87,8 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         switch (view.getId()) {
             case R.id.root:
                 LogUtils.v(TAG, ref.getmSongName());
+                //PlayerController.setQueueAndPosition(mSongList, position);
+                Navigate.to(itemView.getContext(), NowPlayingMusic.class, NowPlayingMusic.EXTRA_ALBUM, ref);
                 break;
             case R.id.click_more:
                 LogUtils.v(TAG, "more click");

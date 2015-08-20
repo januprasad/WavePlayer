@@ -17,6 +17,11 @@
     <dimen name="mini_player_height">60dp</dimen>
     <dimen name="mini_player_elevation">8dp</dimen>
     <dimen name="mini_player_icon_margin">2dp</dimen>
+    <dimen name="now_playing_text_padding">8dp</dimen>
+    <dimen name="now_playing_info_padding">15dp</dimen>
+    <dimen name="now_playing_control_padding">10dp</dimen>
+    <dimen name="now_playing_title_size">20sp</dimen>
+    <dimen name="now_playing_subtitle_size">15sp</dimen>
 
     <dimen name="grid_padding">5dp</dimen>
     <dimen name="grid_margin">5dp</dimen>

@@ -11,6 +11,7 @@ import me.xiaok.waveplayer.BuildConfig;
 public class LogUtils {
     /**
      * Verbose
+     *
      * @param tag
      * @param msg
      */
@@ -22,6 +23,7 @@ public class LogUtils {
 
     /**
      * Debug
+     *
      * @param tag
      * @param msg
      */
@@ -33,30 +35,31 @@ public class LogUtils {
 
     /**
      * Info
+     *
      * @param tag
      * @param msg
      */
     public static void i(String tag, String msg) {
-        if (BuildConfig.DEBUG) {
-            Log.i(tag, msg);
-        }
+        Log.i(tag, msg);
     }
 
     /**
      * Warning
+     *
      * @param tag
      * @param msg
      */
     public static void w(String tag, String msg) {
-            Log.w(tag, msg);
+        Log.w(tag, msg);
     }
 
     /**
      * Error
+     *
      * @param tag
      * @param msg
      */
     public static void e(String tag, String msg) {
-            Log.e(tag, msg);
+        Log.e(tag, msg);
     }
 }

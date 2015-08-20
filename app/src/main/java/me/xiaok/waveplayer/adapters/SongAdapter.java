@@ -35,13 +35,14 @@ public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
     @Override
     public void onBindViewHolder(SongViewHolder holder, int position) {
         Song s = mSongList.get(position);
-        holder.updateViewHolder(s, showIcon);
+        holder.updateViewHolder(s, showIcon, position);
     }
 
     @Override
     public SongViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         SongViewHolder holder = new SongViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_song, parent, false));
+        holder.setSongList(mSongList);
         return holder;
     }
 }
