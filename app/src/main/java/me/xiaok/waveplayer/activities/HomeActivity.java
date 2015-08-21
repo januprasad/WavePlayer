@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.fragments.AlbumsFragment;
 import me.xiaok.waveplayer.fragments.ArtistsFragment;
@@ -98,5 +99,11 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
     }
 
+    /**
+     * 更新UI
+     */
+    @Override
+    public void updateMiniPlayer() {
 
+    }
 }

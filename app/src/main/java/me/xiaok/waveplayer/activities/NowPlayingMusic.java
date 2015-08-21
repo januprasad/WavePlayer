@@ -95,4 +95,12 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
                 break;
         }
     }
+
+    /**
+     * 更新UI
+     */
+    @Override
+    public void update() {
+
+    }
 }

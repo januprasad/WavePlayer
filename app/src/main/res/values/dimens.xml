@@ -32,6 +32,12 @@
     <dimen name="sub_head_size">18sp</dimen>
     <dimen name="sub_head_padding">10dp</dimen>
 
+    <dimen name="notification_height">64dp</dimen>
+    <dimen name="notification_padding">8dp</dimen>
+    <dimen name="notification_title_size">20sp</dimen>
+    <dimen name="notification_subtitle_size">16sp</dimen>
+    <dimen name="notification_expanded_height">128dp</dimen>
+
     <dimen name="global_padding">0dp</dimen>
 
 </resources>

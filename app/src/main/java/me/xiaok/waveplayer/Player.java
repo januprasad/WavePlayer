@@ -2,11 +2,9 @@ package me.xiaok.waveplayer;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.os.Bundle;
 import android.os.PowerManager;
 
 import java.io.IOException;
@@ -24,7 +22,8 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
     public static final String QUEUQ = "Queue";
     public static final String POSITION = "Position";
     //播放切换时发送播放歌曲的状态
-    public static final String UPDATE_MUSIC = "Update_Music";
+    public static final String SONG_CHANGE = "me.xiaok.wavemusic.SONG_CHANGE";
+    public static final String INFO = "info";
 
     //播放列表
     private ArrayList<Song> queue;
@@ -58,6 +57,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
         try {
             mediaPlayer.setDataSource(queue.get(queuePosition).getmSongPath());
             mediaPlayer.prepareAsync();
+            updateNowPlaying();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -131,6 +131,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mediaPlayer.start();
+        updateNowPlaying();
     }
 
     /**
@@ -158,43 +159,14 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
      * 更新正在播放的音乐
      */
     public void updateNowPlaying() {
+        PlayerService.getInstance().notifyNowPlaying();
 
-    }
-
-    public static class State implements Parcelable {
-        private boolean isPlaying;
-        private boolean isPause;
-        private long duration;
-        private Song song;
-
-        public State(Player player) {
-            isPlaying = player.isPlaying();
-            isPause = player.isPasue();
-            duration = player.getNowMusicDuration();
-            song = player.getNowMusic();
-        }
-
-        public static final Parcelable.Creator<State> CREATOR = new Creator<State>() {
-            @Override
-            public State createFromParcel(Parcel parcel) {
-                return null;
-            }
-
-            @Override
-            public State[] newArray(int size) {
-                return new State[size];
-            }
-        };
-
-        @Override
-        public void writeToParcel(Parcel parcel, int i) {
-
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
+        Intent intent = new Intent();
+        intent.setAction(SONG_CHANGE);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(INFO, getNowPlaying());
+        intent.putExtras(bundle);
+        context.sendBroadcast(intent);
     }
 
     /**
@@ -213,19 +185,35 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
         return mediaPlayer.getState() == MediaPlayerManaged.status.PAUSED;
     }
 
-    /**
-     * 获得当前播放歌曲时间
-     * @return
-     */
-    public long getNowMusicDuration() {
-        return queue.get(queuePosition).getmDuration();
+    public boolean isPrepared() {
+        return mediaPlayer.getState() == MediaPlayerManaged.status.PREPARED;
+    }
+
+    public boolean isPreparing() {
+        return mediaPlayer.getState() == MediaPlayerManaged.status.PREPARING;
     }
 
     /**
      * 获得当前正在播放的歌曲
      * @return
      */
-    public Song getNowMusic() {
+    public Song getNowPlaying() {
         return queue.get(queuePosition);
+    }
+
+    /**
+     * 获得目前正在播放的时间
+     * @return
+     */
+    public int getCurrentPosition() {
+        return mediaPlayer.getCurrentPosition();
+    }
+
+    /**
+     * 获得当前播放队列位置
+     * @return
+     */
+    public int getQueuePosition() {
+        return queuePosition;
     }
 }

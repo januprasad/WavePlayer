@@ -1,6 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/notification"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/notification_height">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/notification_icon"
+        android:layout_width="@android:dimen/notification_large_icon_width"
+        android:layout_height="@android:dimen/notification_large_icon_width"
+        fresco:actualImageScaleType="centerInside"
+        fresco:backgroundImage="@android:color/holo_blue_light"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:padding="@dimen/notification_padding"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/notification_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="@dimen/notification_title_size"
+            tools:text="UnKnow"/>
+        <TextView
+            android:id="@+id/notification_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="@dimen/notification_subtitle_size"
+            tools:text="UnKnow-artist"/>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="6dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/notification_toggle_play"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@mipmap/uamp_ic_play_arrow_white_48dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/image_description"/>
+        <ImageView
+            android:id="@+id/notification_next"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@mipmap/ic_skip_next_white_48dp"
+            android:contentDescription="@string/image_description"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/notification_stop"
+        android:layout_marginEnd="6dp"
+        android:layout_width="36dp"
+        android:layout_height="fill_parent"
+        android:scaleType="center"
+        android:background="?android:selectableItemBackground"
+        android:src="@mipmap/ic_close_18dp"
+        android:contentDescription="@string/image_description"/>
 
 </LinearLayout>

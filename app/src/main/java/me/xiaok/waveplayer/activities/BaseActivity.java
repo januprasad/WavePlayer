@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import me.xiaok.waveplayer.LibManager;
+import me.xiaok.waveplayer.Player;
 import me.xiaok.waveplayer.R;
 
 /**
@@ -19,13 +20,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected AppBarLayout mAppBar;
     protected Toolbar mToolBar;
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            update();
-            updateMiniPlayer();
-        }
-    };
+
 
     public void toolBarClick() {}
 
@@ -60,6 +55,16 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     abstract protected int getLayoutResource();
+
+    public class Listener extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null && intent.getAction().equals(Player.SONG_CHANGE)) {
+                update();
+                updateMiniPlayer();
+            }
+        }
+    }
 
     public void update() {}
     public void updateMiniPlayer() {};

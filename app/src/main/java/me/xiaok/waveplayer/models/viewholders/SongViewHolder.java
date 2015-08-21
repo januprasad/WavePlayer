@@ -87,7 +87,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         switch (view.getId()) {
             case R.id.root:
                 LogUtils.v(TAG, ref.getmSongName());
-                //PlayerController.setQueueAndPosition(mSongList, position);
+                PlayerController.setQueueAndPosition(mSongList, position);
                 Navigate.to(itemView.getContext(), NowPlayingMusic.class, NowPlayingMusic.EXTRA_ALBUM, ref);
                 break;
             case R.id.click_more:

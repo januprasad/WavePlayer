@@ -79,12 +79,5 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
         }
     }
 
-    public static class Listener extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals("")) {
 
-            }
-        }
-    }
 }

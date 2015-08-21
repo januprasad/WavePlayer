@@ -1,12 +1,9 @@
 package me.xiaok.waveplayer;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.IBinder;
 
 import java.util.ArrayList;
 
@@ -21,7 +18,6 @@ public class PlayerController {
 
     public static Context application;
     public static Bitmap art;
-    public static Player.State state;
 
     /**
      * 启动播放器服务
@@ -32,17 +28,7 @@ public class PlayerController {
             application = context;
 
             Intent intent = new Intent(context, PlayerService.class);
-            context.bindService(intent, new ServiceConnection() {
-                @Override
-                public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-
-                }
-
-                @Override
-                public void onServiceDisconnected(ComponentName componentName) {
-
-                }
-            }, Context.BIND_AUTO_CREATE);
+            context.startService(intent);
         }
     }
 
@@ -59,6 +45,7 @@ public class PlayerController {
     }
 
     public static void setQueueAndPosition(final ArrayList<Song> queue, int position) {
+
         Intent intent = getBaseIntent(PlayerService.ACTION_SET_QUEUE);
         Bundle bundle = new Bundle();
         bundle.putInt(Player.POSITION, position);
@@ -90,4 +77,5 @@ public class PlayerController {
     public static void stop() {
         application.sendBroadcast(getBaseIntent(PlayerService.ACTION_STOP));
     }
+
 }

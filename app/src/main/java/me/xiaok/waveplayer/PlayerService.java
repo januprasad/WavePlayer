@@ -1,8 +1,10 @@
 package me.xiaok.waveplayer;
 
 import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,9 +13,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.widget.RemoteViews;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import me.xiaok.waveplayer.activities.HomeActivity;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.LogUtils;
 
@@ -43,6 +48,8 @@ public class PlayerService extends Service {
     private static PlayerService instance;
     private Player player;
     private NotificationManager notificationManager;
+    private Context context;
+    private boolean finished = false;
 
     @Nullable
     @Override
@@ -54,6 +61,7 @@ public class PlayerService extends Service {
     public void onCreate() {
         super.onCreate();
         LogUtils.i(TAG, "service onCreate() call");
+        context = WaveApplication.getContext();
         if (instance == null) {
             instance = this;
         } else {
@@ -67,11 +75,22 @@ public class PlayerService extends Service {
             player = new Player(this);
         }
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            startForeground(NOTIFICATION_ID, getNotification());
-//        } else {
-//            startForeground(NOTIFICATION_ID, getNotificationCompat());
-//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            startForeground(NOTIFICATION_ID, getNotification());
+        } else {
+            startForeground(NOTIFICATION_ID, getNotificationCompat());
+        }
+    }
+
+    /**
+     * 更新Notification
+     */
+    public void notifyNowPlaying() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            notificationManager.notify(NOTIFICATION_ID, getNotification());
+        } else {
+            notificationManager.notify(NOTIFICATION_ID, getNotificationCompat());
+        }
     }
 
     /**
@@ -79,7 +98,74 @@ public class PlayerService extends Service {
      */
     @TargetApi(18)
     private Notification getNotificationCompat() {
-        return null;
+        Notification notification;
+
+        Intent intent = new Intent(context, Listener.class);
+
+        RemoteViews notificationView = new RemoteViews(context.getPackageName(), R.layout.notification);
+        RemoteViews notificationViewExpanded = new RemoteViews(context.getPackageName(), R.layout.notification_expanded);
+
+
+        if (getNowPlaying() != null) {
+            //更新notificationView内容
+            notificationView.setTextViewText(R.id.notification_title, getNowPlaying().getmSongName());
+            notificationView.setTextViewText(R.id.notification_subtitle, getNowPlaying().getmArtistName());
+            //更新notificationViewExpanded内容
+            notificationViewExpanded.setTextViewText(R.id.notification_title, getNowPlaying().getmSongName());
+            notificationViewExpanded.setTextViewText(R.id.notification_subtitle, getNowPlaying().getmArtistName());
+            notificationViewExpanded.setTextViewText(R.id.notification_text, getNowPlaying().getmAblumName());
+
+            notificationView.setOnClickPendingIntent(R.id.notification_toggle_play, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_TOGGLE_PLAY), 0));
+            notificationView.setOnClickPendingIntent(R.id.notification_next, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_NEXT), 0));
+            notificationView.setOnClickPendingIntent(R.id.notification_stop, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_STOP), 0));
+
+
+            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_toggle_play, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_TOGGLE_PLAY), 0));
+            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_next, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_NEXT), 0));
+            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_previous, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_PREVIOUS), 0));
+            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_stop, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_STOP), 0));
+
+        } else {
+            //更新notificationView内容
+            notificationView.setTextViewText(R.id.notification_title, "Nothing is playing");
+            notificationView.setTextViewText(R.id.notification_subtitle, "");
+            //更新notificationViewExpanded内容
+            notificationViewExpanded.setTextViewText(R.id.notification_title, "Nothing is playing");
+            notificationViewExpanded.setTextViewText(R.id.notification_subtitle, "");
+            notificationViewExpanded.setTextViewText(R.id.notification_text, "");
+        }
+
+        //更新TogglePlay button
+        if (!(player.isPlaying() || player.isPreparing())) {
+            notificationView.setImageViewResource(R.id.notification_toggle_play, R.mipmap.uamp_ic_play_arrow_white_48dp);
+            notificationViewExpanded.setImageViewResource(R.id.notification_toggle_play, R.mipmap.uamp_ic_play_arrow_white_48dp);
+        } else {
+            notificationView.setImageViewResource(R.id.notification_toggle_play, R.mipmap.uamp_ic_pause_white_48dp);
+            notificationViewExpanded.setImageViewResource(R.id.notification_toggle_play, R.mipmap.uamp_ic_pause_white_48dp);
+        }
+
+        // Build the notification
+        notification = new Notification.Builder(context)
+                .setOngoing(true)
+                .setSmallIcon(
+                        (player.isPlaying() || player.isPreparing())
+                        ? R.mipmap.uamp_ic_play_arrow_white_24dp
+                                : R.mipmap.uamp_ic_pause_white_24dp
+                )
+                .setOnlyAlertOnce(true)
+                .setPriority(Notification.PRIORITY_LOW)
+                .setContentIntent(PendingIntent.getActivity(
+                        getInstance(),
+                        0,
+                        new Intent(context, HomeActivity.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT))
+                .build();
+
+        // Manually set the expanded and compact views
+        notification.contentView = notificationView;
+        notification.bigContentView = notificationViewExpanded;
+
+        return notification;
     }
 
     /**
@@ -87,9 +173,65 @@ public class PlayerService extends Service {
      */
     @TargetApi(21)
     private Notification getNotification() {
-        return null;
+        Notification.Builder notification = new Notification.Builder(context);
+
+        Intent intent = new Intent(getInstance(), Listener.class);
+
+        notification
+                .setStyle(new Notification.MediaStyle().setShowActionsInCompactView(1, 2))
+                .setColor(context.getResources().getColor(R.color.grid_default_background))
+                .setShowWhen(false)
+                .setOngoing(true)
+                .setOnlyAlertOnce(true)
+                .setPriority(Notification.PRIORITY_LOW)
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
+                .setContentIntent(PendingIntent.getActivity(
+                        getInstance(),
+                        0,
+                        new Intent(context, HomeActivity.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT));
+
+        // Set the album artwork
+//        if (getArt() == null) {
+//            notification.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.art_default));
+//        } else {
+//            notification.setLargeIcon(getArt());
+//        }
+
+        // 添加控制按钮
+        // 添加Play/Pause切换按钮
+        // Also set the notification's icon to reflect the player's status
+        if (player.isPlaying() || player.isPreparing()) {
+            notification
+                    .addAction(R.mipmap.uamp_ic_pause_white_48dp, "action_pause", PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0))
+                    .setSmallIcon(R.mipmap.uamp_ic_play_arrow_white_24dp);
+        } else {
+            notification
+                    .setDeleteIntent(PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_STOP), 0))
+                    .addAction(R.mipmap.uamp_ic_play_arrow_white_48dp, "action_play", PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0))
+                    .setSmallIcon(R.mipmap.uamp_ic_pause_white_24dp);
+        }
+        // 添加Next按钮
+        notification.addAction(R.mipmap.ic_skip_next_white_48dp, "action_next", PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_NEXT), 0));
+
+
+        // 更新正在播放的信息
+        if (getNowPlaying() != null) {
+            notification
+                    .setContentTitle(getNowPlaying().getmSongName())
+                    .setContentText(getNowPlaying().getmArtistName());
+        }
+        else{
+            notification
+                    .setContentTitle("Nothing is playing")
+                    .setContentText("");
+        }
+        return notification.build();
     }
 
+    /**
+     * 广播接收器，接收对Player的控制
+     */
     public static class Listener extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -102,25 +244,26 @@ public class PlayerService extends Service {
                 case ACTION_SET_QUEUE:
                     Bundle bundle = intent.getExtras();
                     ArrayList<Song> songs = bundle.getParcelableArrayList(Player.QUEUQ);
-                    getService().player.setQueue(songs, bundle.getInt(Player.POSITION, 0));
-                    getService().player.begin();
+                    instance.player.setQueue(songs, bundle.getInt(Player.POSITION, 0));
+                    instance.player.begin();
                     break;
                 case ACTION_TOGGLE_PLAY:
-                    getService().player.togglePlay();
+                    instance.player.togglePlay();
                     break;
                 case ACTION_PLAY:
-                    getService().player.play();
+                    instance.player.play();
                     break;
                 case ACTION_NEXT:
-                    getService().player.next();
+                    instance.player.next();
                     break;
                 case ACTION_PREVIOUS:
-                    getService().player.previous();
+                    instance.player.previous();
                     break;
                 case ACTION_PAUSE:
-                    getService().player.pause();
+                    instance.player.pause();
                     break;
                 case ACTION_STOP:
+                    instance.stop();
                     break;
             }
         }
@@ -128,18 +271,64 @@ public class PlayerService extends Service {
 
     @Override
     public void onDestroy() {
+        finish();
         super.onDestroy();
-        instance = null;
-        notificationManager.cancel(NOTIFICATION_ID);
-        player.finish();
+
     }
 
-    public static PlayerService getService() {
+    /**
+     * 结束
+     */
+    public void stop() {
+        LogUtils.i(TAG, "stop() called");
+        // 如果UI线程正在工作，不要结束，只移除Notification
+        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
+        for(int i = 0; i < procInfos.size(); i++){
+            if(procInfos.get(i).processName.equals(BuildConfig.APPLICATION_ID)){
+                player.pause();
+                stopForeground(true);
+                return;
+            }
+        }
+
+        finish();
+    }
+
+    /**
+     * 结束并清空资源
+     */
+    public void finish() {
+        LogUtils.i(TAG, "finish() called");
+        if (!finished) {
+            notificationManager.cancel(NOTIFICATION_ID);
+            player.finish();
+            player = null;
+            stopForeground(true);
+            instance = null;
+            stopSelf();
+            finished = true;
+        }
+    }
+
+    /**
+     * 获得Service实例
+     * @return
+     */
+    public static PlayerService getInstance() {
         return instance;
     }
 
     public Player getPlayer() {
         return player;
+    }
+
+    /**
+     * 获得当前正在播放的音乐
+     * @return
+     */
+    public Song getNowPlaying() {
+        return player.getNowPlaying();
     }
 
 }
