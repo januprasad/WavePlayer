@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="@dimen/notification_expanded_height">
 
-    <com.facebook.drawee.view.SimpleDraweeView
+    <ImageView
         android:id="@+id/notification_icon"
-        android:layout_width="@dimen/notification_expanded_height"
-        android:layout_height="@dimen/notification_expanded_height"
-        fresco:actualImageScaleType="centerInside"
-        fresco:backgroundImage="@android:color/holo_blue_light"/>
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/image_description" />
 
     <LinearLayout
         android:layout_width="match_parent"

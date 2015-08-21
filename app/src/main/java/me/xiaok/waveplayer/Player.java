@@ -2,15 +2,20 @@ package me.xiaok.waveplayer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.os.PowerManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import me.xiaok.waveplayer.models.Song;
+import me.xiaok.waveplayer.utils.FetchUtils;
+import me.xiaok.waveplayer.utils.LogUtils;
 import me.xiaok.waveplayer.utils.MediaPlayerManaged;
 
 /**
@@ -29,6 +34,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
     private ArrayList<Song> queue;
     private int queuePosition;
     private Context context;
+    private Bitmap art;
 
     //播放器
     private MediaPlayerManaged mediaPlayer;
@@ -46,6 +52,8 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnCompletionListener(this);
+
+        queue = new ArrayList<>();
     }
 
     /**
@@ -54,6 +62,9 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
     public void begin() {
         mediaPlayer.stop();
         mediaPlayer.reset();
+
+        art = FetchUtils.fetchAlbumArtLocal(getNowPlaying().getmAlbumId());
+
         try {
             mediaPlayer.setDataSource(queue.get(queuePosition).getmSongPath());
             mediaPlayer.prepareAsync();
@@ -72,6 +83,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
         } else {
             play();
         }
+        updateNowPlaying();
     }
 
     /**
@@ -120,7 +132,8 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
      * @param positon
      */
     public void setQueue(ArrayList<Song> list, int positon) {
-        this.queue = list;
+        queue.clear();
+        this.queue.addAll(list);
         this.queuePosition = positon;
     }
 
@@ -164,9 +177,56 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
         Intent intent = new Intent();
         intent.setAction(SONG_CHANGE);
         Bundle bundle = new Bundle();
-        bundle.putParcelable(INFO, getNowPlaying());
+        bundle.putParcelable(INFO, new Info(this));
         intent.putExtras(bundle);
-        context.sendBroadcast(intent);
+        context.sendOrderedBroadcast(intent, null);
+    }
+
+    public static class Info implements Parcelable {
+
+        public boolean isPlaying;
+        public boolean isPause;
+        public boolean isPrepared;
+        public Song song;
+
+        public Info(Player player) {
+            isPlaying = player.isPlaying();
+            isPause = player.isPasue();
+            isPrepared = player.isPrepared();
+            song = player.getNowPlaying();
+        }
+
+        public Info(Parcel parcel) {
+            boolean[] booleans = new boolean[3];
+            parcel.readBooleanArray(booleans);
+            isPlaying = booleans[0];
+            isPause = booleans[1];
+            isPrepared = booleans[2];
+            song = parcel.readParcelable(Song.class.getClassLoader());
+        }
+
+        public static final Parcelable.Creator<Info> CREATOR = new Parcelable.Creator<Info>() {
+            @Override
+            public Info createFromParcel(Parcel parcel) {
+                return new Info(parcel);
+            }
+
+            @Override
+            public Info[] newArray(int size) {
+                return new Info[size];
+            }
+        };
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel parcel, int i) {
+            parcel.writeBooleanArray(new boolean[]{isPlaying, isPause, isPrepared});
+            parcel.writeParcelable(song, PARCELABLE_WRITE_RETURN_VALUE);
+        }
     }
 
     /**
@@ -198,7 +258,12 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
      * @return
      */
     public Song getNowPlaying() {
-        return queue.get(queuePosition);
+        LogUtils.v(TAG, "position: " + queuePosition + "size : " + queue.size());
+        if (queue.size() == 0) {
+            return null;
+        } else {
+            return queue.get(queuePosition);
+        }
     }
 
     /**
@@ -215,5 +280,9 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
      */
     public int getQueuePosition() {
         return queuePosition;
+    }
+
+    public Bitmap getArt() {
+        return art;
     }
 }

@@ -11,8 +11,12 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import me.xiaok.waveplayer.Player;
+import me.xiaok.waveplayer.PlayerController;
+import me.xiaok.waveplayer.PlayerService;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.models.Song;
+import me.xiaok.waveplayer.utils.FetchUtils;
 
 /**
  * 正在播放音乐界面
@@ -75,7 +79,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         mPrevious = (ImageView) findViewById(R.id.control_previous);
 
         mSongImg.setAspectRatio(1.0f);
-        mSongImg.setImageURI(Uri.parse("res:///" + R.mipmap.text_img));
+        mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(song.getmAlbumId()));
         mSongTitle.setText(song.getmSongName());
         mSongInfo.setText(song.getmArtistName() + "|" + song.getmAblumName());
 
@@ -88,10 +92,13 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.control_toggle_play:
+                PlayerController.togglePlay();
                 break;
             case R.id.control_next:
+                PlayerController.next();
                 break;
             case R.id.control_previous:
+                PlayerController.previous();
                 break;
         }
     }
@@ -100,7 +107,18 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
      * 更新UI
      */
     @Override
-    public void update() {
+    public void update(Intent intent) {
+        Player.Info info = intent.getExtras().getParcelable(Player.INFO);
 
+        if (info != null) {
+            mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(info.song.getmAlbumId()));
+            mSongTitle.setText(info.song.getmSongName());
+            mSongInfo.setText(info.song.getmArtistName() + "|" + info.song.getmAblumName());
+            if (!(info.isPlaying || info.isPrepared)) {
+                mTogglePlay.setImageResource(R.mipmap.uamp_ic_play_arrow_white_48dp);
+            } else {
+                mTogglePlay.setImageResource(R.mipmap.uamp_ic_pause_white_48dp);
+            }
+        }
     }
 }

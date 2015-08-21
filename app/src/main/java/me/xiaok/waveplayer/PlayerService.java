@@ -9,6 +9,8 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -70,7 +72,7 @@ public class PlayerService extends Service {
             return;
         }
 
-        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (player == null) {
             player = new Player(this);
         }
@@ -98,12 +100,11 @@ public class PlayerService extends Service {
      */
     @TargetApi(18)
     private Notification getNotificationCompat() {
-        Notification notification;
 
-        Intent intent = new Intent(context, Listener.class);
+        Intent intent = new Intent(this, Listener.class);
 
-        RemoteViews notificationView = new RemoteViews(context.getPackageName(), R.layout.notification);
-        RemoteViews notificationViewExpanded = new RemoteViews(context.getPackageName(), R.layout.notification_expanded);
+        RemoteViews notificationView = new RemoteViews(getPackageName(), R.layout.notification);
+        RemoteViews notificationViewExpanded = new RemoteViews(getPackageName(), R.layout.notification_expanded);
 
 
         if (getNowPlaying() != null) {
@@ -115,15 +116,15 @@ public class PlayerService extends Service {
             notificationViewExpanded.setTextViewText(R.id.notification_subtitle, getNowPlaying().getmArtistName());
             notificationViewExpanded.setTextViewText(R.id.notification_text, getNowPlaying().getmAblumName());
 
-            notificationView.setOnClickPendingIntent(R.id.notification_toggle_play, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_TOGGLE_PLAY), 0));
-            notificationView.setOnClickPendingIntent(R.id.notification_next, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_NEXT), 0));
-            notificationView.setOnClickPendingIntent(R.id.notification_stop, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_STOP), 0));
+            notificationView.setOnClickPendingIntent(R.id.notification_toggle_play, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0));
+            notificationView.setOnClickPendingIntent(R.id.notification_next, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_NEXT), 0));
+            notificationView.setOnClickPendingIntent(R.id.notification_stop, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_STOP), 0));
 
 
-            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_toggle_play, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_TOGGLE_PLAY), 0));
-            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_next, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_NEXT), 0));
-            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_previous, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_PREVIOUS), 0));
-            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_stop, PendingIntent.getBroadcast(context, 0, intent.setAction(ACTION_STOP), 0));
+            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_toggle_play, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0));
+            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_next, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_NEXT), 0));
+            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_previous, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_PREVIOUS), 0));
+            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_stop, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_STOP), 0));
 
         } else {
             //更新notificationView内容
@@ -145,21 +146,23 @@ public class PlayerService extends Service {
         }
 
         // Build the notification
-        notification = new Notification.Builder(context)
+        Notification.Builder builder = new Notification.Builder(this)
                 .setOngoing(true)
                 .setSmallIcon(
                         (player.isPlaying() || player.isPreparing())
-                        ? R.mipmap.uamp_ic_play_arrow_white_24dp
+                                ? R.mipmap.uamp_ic_play_arrow_white_24dp
                                 : R.mipmap.uamp_ic_pause_white_24dp
                 )
                 .setOnlyAlertOnce(true)
                 .setPriority(Notification.PRIORITY_LOW)
                 .setContentIntent(PendingIntent.getActivity(
-                        getInstance(),
+                        this,
                         0,
                         new Intent(context, HomeActivity.class),
-                        PendingIntent.FLAG_UPDATE_CURRENT))
-                .build();
+                        PendingIntent.FLAG_UPDATE_CURRENT));
+
+        Notification notification;
+        notification = builder.build();
 
         // Manually set the expanded and compact views
         notification.contentView = notificationView;
@@ -178,7 +181,7 @@ public class PlayerService extends Service {
         Intent intent = new Intent(getInstance(), Listener.class);
 
         notification
-                .setStyle(new Notification.MediaStyle().setShowActionsInCompactView(1, 2))
+                .setStyle(new Notification.MediaStyle().setShowActionsInCompactView(0, 1, 2))
                 .setColor(context.getResources().getColor(R.color.grid_default_background))
                 .setShowWhen(false)
                 .setOngoing(true)
@@ -192,13 +195,15 @@ public class PlayerService extends Service {
                         PendingIntent.FLAG_UPDATE_CURRENT));
 
         // Set the album artwork
-//        if (getArt() == null) {
-//            notification.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.art_default));
-//        } else {
-//            notification.setLargeIcon(getArt());
-//        }
+        if (getArt() == null) {
+            notification.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.text_img));
+        } else {
+            notification.setLargeIcon(getArt());
+        }
 
         // 添加控制按钮
+        //添加Previous按钮
+        notification.addAction(R.mipmap.ic_skip_previous_white_48dp, "action_previous", PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_PREVIOUS), 0));
         // 添加Play/Pause切换按钮
         // Also set the notification's icon to reflect the player's status
         if (player.isPlaying() || player.isPreparing()) {
@@ -220,8 +225,7 @@ public class PlayerService extends Service {
             notification
                     .setContentTitle(getNowPlaying().getmSongName())
                     .setContentText(getNowPlaying().getmArtistName());
-        }
-        else{
+        } else {
             notification
                     .setContentTitle("Nothing is playing")
                     .setContentText("");
@@ -284,8 +288,8 @@ public class PlayerService extends Service {
         // 如果UI线程正在工作，不要结束，只移除Notification
         ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
-        for(int i = 0; i < procInfos.size(); i++){
-            if(procInfos.get(i).processName.equals(BuildConfig.APPLICATION_ID)){
+        for (int i = 0; i < procInfos.size(); i++) {
+            if (procInfos.get(i).processName.equals(BuildConfig.APPLICATION_ID)) {
                 player.pause();
                 stopForeground(true);
                 return;
@@ -313,6 +317,7 @@ public class PlayerService extends Service {
 
     /**
      * 获得Service实例
+     *
      * @return
      */
     public static PlayerService getInstance() {
@@ -325,10 +330,15 @@ public class PlayerService extends Service {
 
     /**
      * 获得当前正在播放的音乐
+     *
      * @return
      */
     public Song getNowPlaying() {
         return player.getNowPlaying();
+    }
+
+    public Bitmap getArt() {
+        return player.getArt();
     }
 
 }

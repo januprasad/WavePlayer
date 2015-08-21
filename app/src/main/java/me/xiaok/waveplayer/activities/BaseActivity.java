@@ -3,11 +3,15 @@ package me.xiaok.waveplayer.activities;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.WindowManager;
 
 import me.xiaok.waveplayer.LibManager;
 import me.xiaok.waveplayer.Player;
@@ -54,18 +58,26 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    abstract protected int getLayoutResource();
-
-    public class Listener extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent != null && intent.getAction().equals(Player.SONG_CHANGE)) {
-                update();
-                updateMiniPlayer();
-            }
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(receiver, new IntentFilter(Player.SONG_CHANGE));
     }
 
-    public void update() {}
-    public void updateMiniPlayer() {};
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+    }
+
+    abstract protected int getLayoutResource();
+
+    public BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            update(intent);
+        }
+    };
+
+    public void update(Intent intent) {}
 }

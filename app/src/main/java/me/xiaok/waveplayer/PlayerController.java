@@ -17,7 +17,6 @@ public class PlayerController {
     public static final String TAG = "PlayerController";
 
     public static Context application;
-    public static Bitmap art;
 
     /**
      * 启动播放器服务
