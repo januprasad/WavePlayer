@@ -8,6 +8,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.fragments.AlbumsFragment;
 import me.xiaok.waveplayer.fragments.ArtistsFragment;
@@ -38,6 +39,10 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
         setupInstance();
+
+        mCurrentFragment = new SongsFragment();
+        mToolBar.setTitle(R.string.nav_music);
+        transactionTo(mCurrentFragment);
     }
 
     @Override
@@ -67,18 +72,25 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         menuItem.setChecked(true);
         switch (menuItem.getItemId()) {
             case R.id.nav_song:
-                mCurrentFragment = new SongsFragment();
-                mToolBar.setTitle(R.string.nav_music);
+                if (!(mCurrentFragment instanceof SongsFragment)) {
+                    mCurrentFragment = new SongsFragment();
+                    mToolBar.setTitle(R.string.nav_music);
+                }
                 break;
             case R.id.nav_artist:
-                mCurrentFragment = new ArtistsFragment();
-                mToolBar.setTitle(R.string.nav_artist);
+                if (!(mCurrentFragment instanceof ArtistsFragment)) {
+                    mCurrentFragment = new ArtistsFragment();
+                    mToolBar.setTitle(R.string.nav_artist);
+                }
                 break;
             case R.id.nav_album:
-                mCurrentFragment = new AlbumsFragment();
-                mToolBar.setTitle(R.string.nav_album);
+                if (!(mCurrentFragment instanceof AlbumsFragment)) {
+                    mCurrentFragment = new AlbumsFragment();
+                    mToolBar.setTitle(R.string.nav_album);
+                }
                 break;
             case R.id.nav_quit:
+                PlayerController.stop();
                 finish();
                 break;
         }
