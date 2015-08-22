@@ -52,8 +52,6 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnCompletionListener(this);
-
-        queue = new ArrayList<>();
     }
 
     /**
@@ -132,8 +130,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
      * @param positon
      */
     public void setQueue(ArrayList<Song> list, int positon) {
-        queue.clear();
-        this.queue.addAll(list);
+        this.queue = list;
         this.queuePosition = positon;
     }
 
@@ -258,8 +255,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
      * @return
      */
     public Song getNowPlaying() {
-        LogUtils.v(TAG, "position: " + queuePosition + "size : " + queue.size());
-        if (queue.size() == 0) {
+        if (queue == null) {
             return null;
         } else {
             return queue.get(queuePosition);

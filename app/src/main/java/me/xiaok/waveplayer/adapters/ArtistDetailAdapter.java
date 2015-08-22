@@ -34,6 +34,7 @@ public class ArtistDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.mContext = context;
         this.mAlbumList = albumList;
         this.mSongList = songList;
+
     }
 
     @Override

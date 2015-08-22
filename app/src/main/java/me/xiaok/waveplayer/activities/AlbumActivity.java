@@ -14,10 +14,15 @@ import android.view.View;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import java.util.ArrayList;
+
 import me.xiaok.waveplayer.LibManager;
+import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.adapters.SongAdapter;
 import me.xiaok.waveplayer.models.Album;
+import me.xiaok.waveplayer.models.Song;
+import me.xiaok.waveplayer.utils.Navigate;
 
 /**
  * 专辑详情Activity
@@ -33,6 +38,7 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
 
     private RecyclerView mList;
     private FloatingActionButton mFabPlay;
+    private ArrayList<Song> mSongList;
     private SongAdapter mAdapter;
     private LayoutManager mLayoutManager;
 
@@ -47,6 +53,7 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
 
         Intent intent = getIntent();
         mAlbum = intent.getExtras().getParcelable(EXTRA_ALBUM);
+        mSongList = LibManager.getAlbumSongs(mAlbum);
 
         setupAdapter();
         setupInstance();
@@ -69,7 +76,7 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void setupAdapter() {
-        mAdapter = new SongAdapter(LibManager.getAlbumSongs(mAlbum), false);
+        mAdapter = new SongAdapter(mSongList, false);
         mLayoutManager = new LinearLayoutManager(this);
     }
 
@@ -104,6 +111,8 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
         switch (view.getId()) {
             case R.id.fab_play:
                 //将此专辑下的所有歌曲添加到播放队列，并且播放
+                PlayerController.setQueueAndPosition(mSongList, 0);
+                Navigate.to(this, NowPlayingMusic.class, NowPlayingMusic.EXTRA_ALBUM, mSongList.get(0));
                 break;
         }
     }

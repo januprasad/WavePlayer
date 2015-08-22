@@ -2,6 +2,7 @@ package me.xiaok.waveplayer.activities;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -15,12 +16,16 @@ import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 
+import de.umass.lastfm.ImageSize;
 import me.xiaok.waveplayer.LibManager;
+import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.adapters.ArtistDetailAdapter;
 import me.xiaok.waveplayer.models.Album;
 import me.xiaok.waveplayer.models.Artist;
 import me.xiaok.waveplayer.models.Song;
+import me.xiaok.waveplayer.utils.FetchUtils;
+import me.xiaok.waveplayer.utils.Navigate;
 
 /**
  * 歌手详情Activity
@@ -42,6 +47,7 @@ public class ArtistActivity extends BaseActivity implements View.OnClickListener
 
     private ArrayList<Song> mSongList;
     private ArrayList<Album> mAlbumList;
+    private de.umass.lastfm.Artist artist;
 
     @Override
     protected int getLayoutResource() {
@@ -119,15 +125,32 @@ public class ArtistActivity extends BaseActivity implements View.OnClickListener
      * 加载专辑图片
      */
     private void loadBackDrop() {
-        SimpleDraweeView backDrop = (SimpleDraweeView) findViewById(R.id.backdrop);
-        backDrop.setImageURI(Uri.parse("res:///" + R.mipmap.text_img));
+        final SimpleDraweeView backDrop = (SimpleDraweeView) findViewById(R.id.backdrop);
+//        backDrop.setImageURI(Uri.parse("res:///" + R.mipmap.text_img));
+
+        new AsyncTask<Artist, Void, Void>() {
+            @Override
+            protected Void doInBackground(Artist... artists) {
+                artist = FetchUtils.fetchArtistInfo(ArtistActivity.this, artists[0].getmArtistName());
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                if (artist != null) {
+                    backDrop.setImageURI(Uri.parse(artist.getImageURL(ImageSize.MEGA)));
+                }
+            }
+        }.execute(mArtist);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fab_play:
-                //将此专辑下的所有歌曲添加到播放队列，并且播放
+                PlayerController.setQueueAndPosition(mSongList, 0);
+                Navigate.to(this, NowPlayingMusic.class, NowPlayingMusic.EXTRA_ALBUM, mSongList.get(0));
                 break;
         }
     }
