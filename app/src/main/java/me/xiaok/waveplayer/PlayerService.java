@@ -138,11 +138,11 @@ public class PlayerService extends Service {
 
         //更新TogglePlay button
         if (!(player.isPlaying() || player.isPreparing())) {
-            notificationView.setImageViewResource(R.id.notification_toggle_play, R.mipmap.uamp_ic_play_arrow_white_48dp);
-            notificationViewExpanded.setImageViewResource(R.id.notification_toggle_play, R.mipmap.uamp_ic_play_arrow_white_48dp);
+            notificationView.setImageViewResource(R.id.notification_toggle_play, R.mipmap.ic_play_arrow_white_48dp);
+            notificationViewExpanded.setImageViewResource(R.id.notification_toggle_play, R.mipmap.ic_play_arrow_white_48dp);
         } else {
-            notificationView.setImageViewResource(R.id.notification_toggle_play, R.mipmap.uamp_ic_pause_white_48dp);
-            notificationViewExpanded.setImageViewResource(R.id.notification_toggle_play, R.mipmap.uamp_ic_pause_white_48dp);
+            notificationView.setImageViewResource(R.id.notification_toggle_play, R.mipmap.ic_pause_white_48dp);
+            notificationViewExpanded.setImageViewResource(R.id.notification_toggle_play, R.mipmap.ic_pause_white_48dp);
         }
 
         // Build the notification
@@ -150,8 +150,8 @@ public class PlayerService extends Service {
                 .setOngoing(true)
                 .setSmallIcon(
                         (player.isPlaying() || player.isPreparing())
-                                ? R.mipmap.uamp_ic_play_arrow_white_24dp
-                                : R.mipmap.uamp_ic_pause_white_24dp
+                                ? R.mipmap.ic_play_arrow_white_24dp
+                                : R.mipmap.ic_pause_white_24dp
                 )
                 .setOnlyAlertOnce(true)
                 .setPriority(Notification.PRIORITY_LOW)
@@ -208,13 +208,13 @@ public class PlayerService extends Service {
         // Also set the notification's icon to reflect the player's status
         if (player.isPlaying() || player.isPreparing()) {
             notification
-                    .addAction(R.mipmap.uamp_ic_pause_white_48dp, "action_pause", PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0))
-                    .setSmallIcon(R.mipmap.uamp_ic_play_arrow_white_24dp);
+                    .addAction(R.mipmap.ic_pause_white_48dp, "action_pause", PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0))
+                    .setSmallIcon(R.mipmap.ic_play_arrow_white_24dp);
         } else {
             notification
                     .setDeleteIntent(PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_STOP), 0))
-                    .addAction(R.mipmap.uamp_ic_play_arrow_white_48dp, "action_play", PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0))
-                    .setSmallIcon(R.mipmap.uamp_ic_pause_white_24dp);
+                    .addAction(R.mipmap.ic_play_arrow_white_48dp, "action_play", PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0))
+                    .setSmallIcon(R.mipmap.ic_pause_white_24dp);
         }
         // 添加Next按钮
         notification.addAction(R.mipmap.ic_skip_next_white_48dp, "action_next", PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_NEXT), 0));
@@ -224,11 +224,13 @@ public class PlayerService extends Service {
         if (getNowPlaying() != null) {
             notification
                     .setContentTitle(getNowPlaying().getmSongName())
-                    .setContentText(getNowPlaying().getmArtistName());
+                    .setContentText(getNowPlaying().getmArtistName())
+                    .setSubText(getNowPlaying().getmAblumName());
         } else {
             notification
                     .setContentTitle("Nothing is playing")
-                    .setContentText("");
+                    .setContentText("")
+                    .setSubText("");
         }
         return notification.build();
     }

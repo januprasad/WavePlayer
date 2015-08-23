@@ -46,6 +46,7 @@ public class AlbumsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mList = (RecyclerView) view.findViewById(R.id.list);
         mList.setLayoutManager(mLayoutManager);
+        mList.setAdapter(mAdapter);
         loadAlbums();
         super.onViewCreated(view, savedInstanceState);
     }

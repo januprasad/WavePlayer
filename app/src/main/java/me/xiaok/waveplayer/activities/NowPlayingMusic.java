@@ -36,7 +36,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
     private ImageView mTogglePlay;
     private ImageView mNext;
     private ImageView mPrevious;
-    private RelativeLayout mContain;
+    private ImageView mReflectedImage;
 
     @Override
     protected int getLayoutResource() {
@@ -80,14 +80,13 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         mTogglePlay = (ImageView) findViewById(R.id.control_toggle_play);
         mNext = (ImageView) findViewById(R.id.control_next);
         mPrevious = (ImageView) findViewById(R.id.control_previous);
-        mContain = (RelativeLayout) findViewById(R.id.contain);
+        mReflectedImage = (ImageView) findViewById(R.id.reflected_image);
 
-        mSongImg.setAspectRatio(1.0f);
         mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(song.getmAlbumId()));
         mSongTitle.setText(song.getmSongName());
         mSongInfo.setText(song.getmArtistName() + "|" + song.getmAblumName());
         Bitmap reflectedImage = MusicUtils.createReflectedImage(FetchUtils.fetchAlbumArtLocal(song.getmAlbumId()));
-        mContain.setBackground(new BitmapDrawable(getResources(), reflectedImage));
+        mReflectedImage.setImageBitmap(reflectedImage);
         mTogglePlay.setOnClickListener(this);
         mNext.setOnClickListener(this);
         mPrevious.setOnClickListener(this);
@@ -118,13 +117,13 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         if (info != null) {
             mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(info.song.getmAlbumId()));
             Bitmap reflectedImage = MusicUtils.createReflectedImage(FetchUtils.fetchAlbumArtLocal(info.song.getmAlbumId()));
-            mContain.setBackground(new BitmapDrawable(getResources(), reflectedImage));
+            mReflectedImage.setImageBitmap(reflectedImage);
             mSongTitle.setText(info.song.getmSongName());
             mSongInfo.setText(info.song.getmArtistName() + "|" + info.song.getmAblumName());
             if (!(info.isPlaying || info.isPrepared)) {
-                mTogglePlay.setImageResource(R.mipmap.uamp_ic_play_arrow_white_48dp);
+                mTogglePlay.setImageResource(R.mipmap.ic_play_arrow_white_48dp);
             } else {
-                mTogglePlay.setImageResource(R.mipmap.uamp_ic_pause_white_48dp);
+                mTogglePlay.setImageResource(R.mipmap.ic_pause_white_48dp);
             }
         }
     }

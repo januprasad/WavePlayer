@@ -50,7 +50,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@mipmap/uamp_ic_play_arrow_white_48dp"
+            android:src="@mipmap/ic_play_arrow_white_48dp"
             android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/image_description"/>
         <ImageView
