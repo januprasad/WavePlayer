@@ -13,6 +13,7 @@ import android.os.PowerManager;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import me.xiaok.waveplayer.models.Album;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.FetchUtils;
 import me.xiaok.waveplayer.utils.LogUtils;
@@ -61,7 +62,11 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
         mediaPlayer.stop();
         mediaPlayer.reset();
 
-        art = FetchUtils.fetchAlbumArtLocal(getNowPlaying().getmAlbumId());
+        art = FetchUtils.fetchFullArt(getNowPlaying());
+        if (art == null) {
+            LogUtils.v(TAG, "art is null");
+        }
+
 
         try {
             mediaPlayer.setDataSource(queue.get(queuePosition).getmSongPath());

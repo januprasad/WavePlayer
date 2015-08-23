@@ -3,6 +3,7 @@ package me.xiaok.waveplayer.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 
@@ -16,6 +17,7 @@ import me.xiaok.waveplayer.BuildConfig;
 import me.xiaok.waveplayer.LibManager;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.models.Album;
+import me.xiaok.waveplayer.models.Song;
 
 /**
  * Created by GeeKaven on 15/8/18.
@@ -62,6 +64,26 @@ public class FetchUtils {
             if (a.getmAlbumId() == albumId) {
                 return BitmapFactory.decodeFile(a.getmAlbumArt());
             }
+        }
+        return null;
+    }
+
+    /**
+     * 取得媒体文件信息，主要是得到专辑封面
+     * @param song
+     * @return
+     */
+    public static Bitmap fetchFullArt(Song song){
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+
+        try {
+            retriever.setDataSource(song.getmSongPath());
+            byte[] stream = retriever.getEmbeddedPicture();
+            if (stream != null)
+                return BitmapFactory.decodeByteArray(stream, 0, stream.length);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

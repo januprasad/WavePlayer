@@ -2,11 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/notification"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="64dp"
     android:background="@android:color/transparent"
+    android:orientation="horizontal"
     tools:ignore="ContentDescription">
+
     <ImageView
         android:id="@+id/notification_icon"
         android:layout_width="@android:dimen/notification_large_icon_width"
@@ -17,47 +18,52 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:padding="8dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="8dp">
+
         <TextView
             android:id="@+id/notification_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="2dp"
             android:ellipsize="end"
             android:maxLines="1"
+            android:padding="2dp"
             android:textSize="18sp"
-            tools:text="UnKnow"/>
+            tools:text="UnKnow" />
+
         <TextView
             android:id="@+id/notification_subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="2dp"
             android:ellipsize="end"
             android:maxLines="1"
-            tools:text="UnKnow-artist"/>
+            android:padding="2dp"
+            tools:text="UnKnow-artist" />
     </LinearLayout>
-    
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical|end"
         android:layout_marginEnd="6dp"
         android:orientation="horizontal">
+
         <ImageView
             android:id="@+id/notification_previous"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@mipmap/ic_skip_previous_white_48dp"
-            android:background="?android:selectableItemBackground" />
+            android:background="?android:selectableItemBackground"
+            android:src="@mipmap/ic_skip_previous_white_48dp" />
+
         <ImageView
             android:id="@+id/notification_toggle_play"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@mipmap/ic_play_arrow_white_48dp"
-            android:background="?android:selectableItemBackground" />
+            android:background="?android:selectableItemBackground"
+            android:src="@mipmap/ic_play_arrow_white_48dp" />
+
         <ImageView
             android:id="@+id/notification_next"
             android:layout_width="0dp"

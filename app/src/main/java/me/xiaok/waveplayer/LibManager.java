@@ -292,6 +292,11 @@ public class LibManager {
         return albums;
     }
 
+    /**
+     * 获取该歌手的所有歌曲
+     * @param artist
+     * @return
+     */
     public static ArrayList<Song> getArtistSong(Artist artist) {
         ArrayList<Song> songs = new ArrayList<>();
         for (Song s : mSongLib) {
