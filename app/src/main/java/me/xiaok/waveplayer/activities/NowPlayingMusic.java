@@ -1,22 +1,24 @@
 package me.xiaok.waveplayer.activities;
 
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import me.xiaok.waveplayer.Player;
 import me.xiaok.waveplayer.PlayerController;
-import me.xiaok.waveplayer.PlayerService;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.FetchUtils;
+import me.xiaok.waveplayer.utils.MusicUtils;
 
 /**
  * 正在播放音乐界面
@@ -34,6 +36,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
     private ImageView mTogglePlay;
     private ImageView mNext;
     private ImageView mPrevious;
+    private RelativeLayout mContain;
 
     @Override
     protected int getLayoutResource() {
@@ -77,12 +80,14 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         mTogglePlay = (ImageView) findViewById(R.id.control_toggle_play);
         mNext = (ImageView) findViewById(R.id.control_next);
         mPrevious = (ImageView) findViewById(R.id.control_previous);
+        mContain = (RelativeLayout) findViewById(R.id.contain);
 
         mSongImg.setAspectRatio(1.0f);
         mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(song.getmAlbumId()));
         mSongTitle.setText(song.getmSongName());
         mSongInfo.setText(song.getmArtistName() + "|" + song.getmAblumName());
-
+        Bitmap reflectedImage = MusicUtils.createReflectedImage(FetchUtils.fetchAlbumArtLocal(song.getmAlbumId()));
+        mContain.setBackground(new BitmapDrawable(getResources(), reflectedImage));
         mTogglePlay.setOnClickListener(this);
         mNext.setOnClickListener(this);
         mPrevious.setOnClickListener(this);
@@ -112,6 +117,8 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
 
         if (info != null) {
             mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(info.song.getmAlbumId()));
+            Bitmap reflectedImage = MusicUtils.createReflectedImage(FetchUtils.fetchAlbumArtLocal(info.song.getmAlbumId()));
+            mContain.setBackground(new BitmapDrawable(getResources(), reflectedImage));
             mSongTitle.setText(info.song.getmSongName());
             mSongInfo.setText(info.song.getmArtistName() + "|" + info.song.getmAblumName());
             if (!(info.isPlaying || info.isPrepared)) {

@@ -30,7 +30,7 @@ public class FetchUtils {
 
     public static void initLastFm(Context context) {
         Caller.getInstance().setCache(new FileSystemCache(new File(context.getExternalCacheDir() + "/lastfm/")));
-        Caller.getInstance().setUserAgent("Jockey/" + BuildConfig.VERSION_NAME);
+        Caller.getInstance().setUserAgent("Wave/" + BuildConfig.VERSION_NAME);
 
         lastFmInitialized = true;
     }
