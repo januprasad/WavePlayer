@@ -37,6 +37,7 @@ public class SongsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAdapter = new SongAdapter(new ArrayList<Song>());
         mLayoutManager = new LinearLayoutManager(getActivity());
     }
 
@@ -44,6 +45,7 @@ public class SongsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mList = (RecyclerView)view.findViewById(R.id.list);
         mList.setLayoutManager(mLayoutManager);
+        mList.setAdapter(mAdapter);
         loadSongs();
         super.onViewCreated(view, savedInstanceState);
     }
@@ -58,8 +60,7 @@ public class SongsFragment extends Fragment {
             @Override
             protected void onPostExecute(ArrayList<Song> songs) {
                 super.onPostExecute(songs);
-                mAdapter = new SongAdapter(songs);
-                mList.setAdapter(mAdapter);
+                mAdapter.setmSongList(songs);
             }
 
             @Override

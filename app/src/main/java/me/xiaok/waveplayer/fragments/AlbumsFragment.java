@@ -38,6 +38,7 @@ public class AlbumsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAdapter = new AlbumAdapter(new ArrayList<Album>());
         mLayoutManager = new GridLayoutManager(getActivity(),2);
     }
 
@@ -69,8 +70,7 @@ public class AlbumsFragment extends Fragment {
             @Override
             protected void onPostExecute(ArrayList<Album> albums) {
                 super.onPostExecute(albums);
-                mAdapter = new AlbumAdapter(albums);
-                mList.setAdapter(mAdapter);
+                mAdapter.setmAlbumList(albums);
             }
         }.execute();
     }

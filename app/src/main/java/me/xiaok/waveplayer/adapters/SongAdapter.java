@@ -27,6 +27,11 @@ public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
         this.showIcon = flag;
     }
 
+    public void setmSongList(ArrayList<Song> songList) {
+        mSongList = songList;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return mSongList.size();

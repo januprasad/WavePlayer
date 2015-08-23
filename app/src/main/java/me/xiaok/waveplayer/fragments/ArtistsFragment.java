@@ -38,6 +38,7 @@ public class ArtistsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAdapter = new ArtistAdapter(new ArrayList<Artist>());
         mLayoutManager = new GridLayoutManager(getActivity(),2);
     }
 
@@ -45,6 +46,7 @@ public class ArtistsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mList = (RecyclerView) view.findViewById(R.id.list);
         mList.setLayoutManager(mLayoutManager);
+        mList.setAdapter(mAdapter);
         loadArtists();
         super.onViewCreated(view, savedInstanceState);
     }
@@ -69,8 +71,7 @@ public class ArtistsFragment extends Fragment {
             @Override
             protected void onPostExecute(ArrayList<Artist> artists) {
                 super.onPostExecute(artists);
-                mAdapter = new ArtistAdapter(artists);
-                mList.setAdapter(mAdapter);
+                mAdapter.setmArtistList(artists);
             }
         }.execute();
     }

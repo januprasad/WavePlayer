@@ -23,6 +23,11 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistViewHolder> {
         this.mArtistList = artistList;
     }
 
+    public void setmArtistList(ArrayList<Artist> artistList) {
+        this.mArtistList = artistList;
+        notifyDataSetChanged();
+    }
+
     @Override
     public void onBindViewHolder(ArtistViewHolder holder, int position) {
         holder.updateViewHolder(mArtistList.get(position));
