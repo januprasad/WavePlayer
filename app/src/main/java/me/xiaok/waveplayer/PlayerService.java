@@ -106,6 +106,13 @@ public class PlayerService extends Service {
         RemoteViews notificationView = new RemoteViews(getPackageName(), R.layout.notification);
         RemoteViews notificationViewExpanded = new RemoteViews(getPackageName(), R.layout.notification_expanded);
 
+        if (getArt() == null) {
+            notificationView.setImageViewResource(R.id.notification_icon, R.mipmap.text_img);
+            notificationViewExpanded.setImageViewResource(R.id.notification_icon, R.mipmap.text_img);
+        } else {
+            notificationView.setImageViewResource(R.id.notification_icon, R.mipmap.text_img);
+            notificationViewExpanded.setImageViewResource(R.id.notification_icon, R.mipmap.text_img);
+        }
 
         if (getNowPlaying() != null) {
             //更新notificationView内容
@@ -118,13 +125,11 @@ public class PlayerService extends Service {
 
             notificationView.setOnClickPendingIntent(R.id.notification_toggle_play, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0));
             notificationView.setOnClickPendingIntent(R.id.notification_next, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_NEXT), 0));
-            notificationView.setOnClickPendingIntent(R.id.notification_stop, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_STOP), 0));
-
+            notificationView.setOnClickPendingIntent(R.id.notification_previous, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_PREVIOUS), 0));
 
             notificationViewExpanded.setOnClickPendingIntent(R.id.notification_toggle_play, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0));
             notificationViewExpanded.setOnClickPendingIntent(R.id.notification_next, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_NEXT), 0));
             notificationViewExpanded.setOnClickPendingIntent(R.id.notification_previous, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_PREVIOUS), 0));
-            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_stop, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_STOP), 0));
 
         } else {
             //更新notificationView内容
@@ -159,7 +164,8 @@ public class PlayerService extends Service {
                         this,
                         0,
                         new Intent(context, HomeActivity.class),
-                        PendingIntent.FLAG_UPDATE_CURRENT));
+                        PendingIntent.FLAG_UPDATE_CURRENT))
+                .setContent(notificationView);
 
         Notification notification;
         notification = builder.build();
@@ -167,6 +173,7 @@ public class PlayerService extends Service {
         // Manually set the expanded and compact views
         notification.contentView = notificationView;
         notification.bigContentView = notificationViewExpanded;
+
 
         return notification;
     }
