@@ -1,7 +1,10 @@
 package me.xiaok.waveplayer.models.viewholders;
 
 import android.net.Uri;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -19,13 +22,13 @@ import me.xiaok.waveplayer.utils.Navigate;
 /**
  * Created by GeeKaven on 15/8/18.
  */
-public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
     private static final String TAG = "AlbumViewHolder";
 
     private View itemView;
     private FrameLayout mRoot;
     private SimpleDraweeView mArtistImg;
-    private ImageView mClickImg;
+    private ImageView mClickMore;
     private TextView mArtistName;
     private TextView mAlbumNum;
     private Artist ref;
@@ -35,13 +38,13 @@ public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.On
         this.itemView = itemView;
         mRoot = (FrameLayout) itemView.findViewById(R.id.root);
         mArtistImg = (SimpleDraweeView) itemView.findViewById(R.id.artist_img);
-        mClickImg = (ImageView) itemView.findViewById(R.id.click_more);
+        mClickMore = (ImageView) itemView.findViewById(R.id.click_more);
         mArtistName = (TextView) itemView.findViewById(R.id.artist_name);
         mAlbumNum = (TextView) itemView.findViewById(R.id.album_num);
         mArtistImg.setAspectRatio(1.0f);
 
         mRoot.setOnClickListener(this);
-        mClickImg.setOnClickListener(this);
+        mClickMore.setOnClickListener(this);
     }
 
     /**
@@ -60,12 +63,28 @@ public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.On
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.click_more:
-                LogUtils.v(TAG, "more click");
+                PopupMenu popupMenu = new PopupMenu(itemView.getContext(), mClickMore, Gravity.END);
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu_artist, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(this);
+                popupMenu.show();
                 break;
             case R.id.root:
                 LogUtils.v(TAG, ref.toString());
                 Navigate.to(itemView.getContext(), ArtistActivity.class, ArtistActivity.EXTRA_ARTIST, ref);
                 break;
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.play_all:
+                break;
+            case R.id.add_queue:
+                break;
+            case R.id.add_playlist:
+                break;
+        }
+        return true;
     }
 }

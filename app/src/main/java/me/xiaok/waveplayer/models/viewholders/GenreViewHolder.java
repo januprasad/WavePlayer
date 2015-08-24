@@ -1,6 +1,9 @@
 package me.xiaok.waveplayer.models.viewholders;
 
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -21,14 +24,14 @@ import me.xiaok.waveplayer.utils.Navigate;
 /**
  * Created by GeeKaven on 15/8/24.
  */
-public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
 
     public static final String TAG = "GenreViewHolder";
 
     private View itemView;
     private FrameLayout mRoot;
     private SimpleDraweeView mGenreImg;
-    private ImageView mClickImg;
+    private ImageView mClickMore;
     private TextView mGenreName;
     private TextView mGenreInfo;
     private Genre ref;
@@ -41,13 +44,13 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
         mRoot = (FrameLayout) itemView.findViewById(R.id.root);
         mGenreImg = (SimpleDraweeView) itemView.findViewById(R.id.genre_img);
-        mClickImg = (ImageView) itemView.findViewById(R.id.click_more);
+        mClickMore = (ImageView) itemView.findViewById(R.id.click_more);
         mGenreName = (TextView) itemView.findViewById(R.id.genre_name);
         mGenreInfo = (TextView) itemView.findViewById(R.id.genre_info);
         mGenreImg.setAspectRatio(1.0f);
 
         mRoot.setOnClickListener(this);
-        mClickImg.setOnClickListener(this);
+        mClickMore.setOnClickListener(this);
     }
 
     public void updateViewHolder(Genre genre) {
@@ -70,7 +73,24 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 Navigate.to(itemView.getContext(), GenreActivity.class, GenreActivity.EXTRA_GENRE, ref);
                 break;
             case R.id.click_more:
+                PopupMenu popupMenu = new PopupMenu(itemView.getContext(), mClickMore, Gravity.END);
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu_genre, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(this);
+                popupMenu.show();
                 break;
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.play_all:
+                break;
+            case R.id.add_queue:
+                break;
+            case R.id.add_playlist:
+                break;
+        }
+        return true;
     }
 }

@@ -6,7 +6,10 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -34,7 +37,7 @@ import me.xiaok.waveplayer.utils.Navigate;
 /**
  * Created by GeeKaven on 15/8/18.
  */
-public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, Palette.PaletteAsyncListener{
+public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, Palette.PaletteAsyncListener, PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = "AlbumViewHolder";
     private static final int BACKGROUND_COLOR = 0;
@@ -56,7 +59,7 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private View itemView;
     private FrameLayout mRoot;
     private SimpleDraweeView mAlbumImg;
-    private ImageView mClickImg;
+    private ImageView mClickMore;
     private TextView mAlbumName;
     private TextView mArtistName;
     private Album ref;
@@ -72,21 +75,22 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
         mRoot = (FrameLayout) itemView.findViewById(R.id.root);
         mAlbumImg = (SimpleDraweeView) itemView.findViewById(R.id.album_img);
-        mClickImg = (ImageView) itemView.findViewById(R.id.click_more);
+        mClickMore = (ImageView) itemView.findViewById(R.id.click_more);
         mAlbumName = (TextView) itemView.findViewById(R.id.album_name);
         mArtistName = (TextView) itemView.findViewById(R.id.album_artist);
         mAlbumImg.setAspectRatio(1.0f);
 
         mRoot.setOnClickListener(this);
-        mClickImg.setOnClickListener(this);
+        mClickMore.setOnClickListener(this);
     }
 
     /**
      * 更新ViewHolder
+     *
      * @param album
      */
     public void updateViewHolder(Album album) {
-        if (mPaletteTask!=null && !mPaletteTask.isCancelled())
+        if (mPaletteTask != null && !mPaletteTask.isCancelled())
             mPaletteTask.cancel(true);
 
         ref = album;
@@ -153,33 +157,33 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
         int titleColor = defaultTitleColor;
         int subTitleColor = defaultSubTitleColor;
 
-        if (palette.getVibrantSwatch()!=null) {
+        if (palette.getVibrantSwatch() != null) {
             bgColor = palette.getVibrantColor(0);
             titleColor = palette.getVibrantSwatch().getTitleTextColor();
             subTitleColor = palette.getVibrantSwatch().getBodyTextColor();
-        } else if (palette.getLightVibrantSwatch()!=null) {
+        } else if (palette.getLightVibrantSwatch() != null) {
             bgColor = palette.getLightVibrantColor(0);
             titleColor = palette.getLightVibrantSwatch().getTitleTextColor();
             subTitleColor = palette.getLightVibrantSwatch().getBodyTextColor();
-        } else if (palette.getDarkVibrantSwatch()!=null) {
+        } else if (palette.getDarkVibrantSwatch() != null) {
             bgColor = palette.getDarkVibrantColor(0);
             titleColor = palette.getDarkVibrantSwatch().getTitleTextColor();
             subTitleColor = palette.getDarkVibrantSwatch().getBodyTextColor();
-        } else if (palette.getMutedSwatch()!=null) {
+        } else if (palette.getMutedSwatch() != null) {
             bgColor = palette.getMutedColor(0);
             titleColor = palette.getMutedSwatch().getTitleTextColor();
             subTitleColor = palette.getMutedSwatch().getBodyTextColor();
-        } else if (palette.getLightMutedSwatch()!=null) {
+        } else if (palette.getLightMutedSwatch() != null) {
             bgColor = palette.getLightMutedColor(0);
             titleColor = palette.getLightMutedSwatch().getTitleTextColor();
             subTitleColor = palette.getLightMutedSwatch().getBodyTextColor();
-        } else if (palette.getDarkMutedSwatch()!=null) {
+        } else if (palette.getDarkMutedSwatch() != null) {
             bgColor = palette.getDarkMutedColor(0);
             titleColor = palette.getDarkMutedSwatch().getTitleTextColor();
             subTitleColor = palette.getDarkMutedSwatch().getBodyTextColor();
         }
 
-        colorCache = new int[] {bgColor, titleColor, subTitleColor};
+        colorCache = new int[]{bgColor, titleColor, subTitleColor};
 
         if (backgroundAnimator != null) {
             backgroundAnimator.setDuration(0);
@@ -223,12 +227,28 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.click_more:
-                LogUtils.v(TAG, "more click");
+                PopupMenu popupMenu = new PopupMenu(itemView.getContext(), mClickMore, Gravity.END);
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu_album, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(this);
+                popupMenu.show();
                 break;
             case R.id.root:
                 LogUtils.v(TAG, ref.toString());
                 Navigate.to(itemView.getContext(), AlbumActivity.class, AlbumActivity.EXTRA_ALBUM, ref);
                 break;
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.play_all:
+                break;
+            case R.id.add_queue:
+                break;
+            case R.id.add_playlist:
+                break;
+        }
+        return true;
     }
 }

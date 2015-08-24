@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/play_all"
+        android:title="@string/popup_menu_play_all"/>
+    <item
+        android:id="@+id/add_queue"
+        android:title="@string/popup_menu_add_queue"/>
+    <item
+        android:id="@+id/add_playlist"
+        android:title="@string/popup_menu_add_playlist"/>
+</menu>

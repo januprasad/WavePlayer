@@ -40,8 +40,7 @@ import me.xiaok.waveplayer.utils.MusicUtils;
  */
 public class NowPlayingMusic extends BaseActivity implements View.OnClickListener {
 
-    public static final String EXTRA_ALBUM = "NowPlayingMusic";
-
+    public static final String EXTRA_NOW_PLAYING = "NowPlayingMusic";
 
     private boolean isPlaying = false;
     private Song song;
@@ -64,7 +63,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        song = intent.getExtras().getParcelable(EXTRA_ALBUM);
+        song = intent.getExtras().getParcelable(EXTRA_NOW_PLAYING);
 
         setupInstance();
     }

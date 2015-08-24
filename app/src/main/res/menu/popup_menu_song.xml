@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/add_queue"
+        android:title="@string/popup_menu_add_queue"/>
+    <item
+        android:id="@+id/add_playlist"
+        android:title="@string/popup_menu_add_playlist"/>
+    <item
+        android:id="@+id/set_ring"
+        android:title="@string/popup_menu_set_ring"/>
+    <item
+        android:id="@+id/delete"
+        android:title="@string/popup_menu_delete"/>
+</menu>

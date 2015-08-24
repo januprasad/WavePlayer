@@ -3,7 +3,10 @@ package me.xiaok.waveplayer.models.viewholders;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -27,7 +30,7 @@ import me.xiaok.waveplayer.utils.Navigate;
 /**
  * Created by GeeKaven on 15/8/18.
  */
-public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
 
     private static final String TAG = "SongViewHolder";
     private RelativeLayout mRoot;
@@ -93,11 +96,34 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             case R.id.root:
                 LogUtils.v(TAG, ref.getmSongName());
                 PlayerController.setQueueAndPosition(mSongList, position);
-                Navigate.to(itemView.getContext(), NowPlayingMusic.class, NowPlayingMusic.EXTRA_ALBUM, ref);
+                Navigate.to(itemView.getContext(), NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, ref);
                 break;
             case R.id.click_more:
                 LogUtils.v(TAG, "more click");
+                PopupMenu popupMenu = new PopupMenu(itemView.getContext(), mClickMore, Gravity.END);
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu_song, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(this);
+                popupMenu.show();
                 break;
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_queue:
+                //添加到队列
+                break;
+            case R.id.add_playlist:
+                //添加到播放列表
+                break;
+            case R.id.set_ring:
+                //设置为铃声
+                break;
+            case R.id.delete:
+                //删除
+                break;
+        }
+        return true;
     }
 }
