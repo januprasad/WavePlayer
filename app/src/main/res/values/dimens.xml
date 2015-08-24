@@ -24,7 +24,7 @@
     <dimen name="now_playing_subtitle_size">15sp</dimen>
 
     <dimen name="grid_padding">5dp</dimen>
-    <dimen name="grid_margin">5dp</dimen>
+    <dimen name="grid_margin">2dp</dimen>
     <dimen name="grid_text_title_size">16sp</dimen>
     <dimen name="grid_text_subtitle_size">12sp</dimen>
 

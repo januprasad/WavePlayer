@@ -126,23 +126,23 @@ public class ArtistActivity extends BaseActivity implements View.OnClickListener
      */
     private void loadBackDrop() {
         final SimpleDraweeView backDrop = (SimpleDraweeView) findViewById(R.id.backdrop);
-//        backDrop.setImageURI(Uri.parse("res:///" + R.mipmap.text_img));
+        backDrop.setImageURI(Uri.parse("res:///" + R.mipmap.text_img));
 
-        new AsyncTask<Artist, Void, Void>() {
-            @Override
-            protected Void doInBackground(Artist... artists) {
-                artist = FetchUtils.fetchArtistInfo(ArtistActivity.this, artists[0].getmArtistName());
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                if (artist != null) {
-                    backDrop.setImageURI(Uri.parse(artist.getImageURL(ImageSize.MEGA)));
-                }
-            }
-        }.execute(mArtist);
+//        new AsyncTask<Artist, Void, Void>() {
+//            @Override
+//            protected Void doInBackground(Artist... artists) {
+//                artist = FetchUtils.fetchArtistInfo(ArtistActivity.this, artists[0].getmArtistName());
+//                return null;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(Void aVoid) {
+//                super.onPostExecute(aVoid);
+//                if (artist != null) {
+//                    backDrop.setImageURI(Uri.parse(artist.getImageURL(ImageSize.MEGA)));
+//                }
+//            }
+//        }.execute(mArtist);
     }
 
     @Override

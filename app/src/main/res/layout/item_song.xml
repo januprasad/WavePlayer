@@ -16,7 +16,9 @@
         android:layout_margin="@dimen/list_item_icon_margin"
         fresco:fadeDuration="300"
         fresco:actualImageScaleType="centerInside"
-        fresco:backgroundImage="@android:color/holo_blue_light"
+        fresco:backgroundImage="@mipmap/default_artwork"
+        fresco:failureImage="@mipmap/default_artwork"
+        fresco:failureImageScaleType="centerInside"
         fresco:roundAsCircle="true"/>
 
     <RelativeLayout

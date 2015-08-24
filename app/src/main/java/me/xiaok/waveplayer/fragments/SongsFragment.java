@@ -25,53 +25,18 @@ public class SongsFragment extends Fragment {
 
     private RecyclerView mList;
     private SongAdapter mAdapter;
-    private LayoutManager mLayoutManager;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.com_list, container, false);
-        return v;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mAdapter = new SongAdapter(new ArrayList<Song>());
-        mLayoutManager = new LinearLayoutManager(getActivity());
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.com_list, container, false);
         mList = (RecyclerView)view.findViewById(R.id.list);
-        mList.setLayoutManager(mLayoutManager);
+
+        mAdapter = new SongAdapter(LibManager.getSongs());
+        LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+
+        mList.setLayoutManager(layoutManager);
         mList.setAdapter(mAdapter);
-        loadSongs();
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    /**
-     * 由于点击DrawerLayout的选项后，加载列表(数量有点多)，设置列表消耗一定时间
-     * 会产生明显的卡顿现象，为了避免，就用了AsyncTask在后台加载，然后在显示
-     * 但是，不sleep的话还是会有卡顿，因此就sleep一会儿，等侧边栏滑回后在显示
-     */
-    private void loadSongs() {
-        new AsyncTask<Void, Void, ArrayList<Song>>() {
-            @Override
-            protected void onPostExecute(ArrayList<Song> songs) {
-                super.onPostExecute(songs);
-                mAdapter.setmSongList(songs);
-            }
-
-            @Override
-            protected ArrayList<Song> doInBackground(Void... voids) {
-                try {
-                    Thread.sleep(280);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return LibManager.getSongs();
-            }
-        }.execute();
+        return view;
     }
 }

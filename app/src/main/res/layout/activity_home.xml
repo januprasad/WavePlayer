@@ -4,8 +4,8 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:clipToPadding="true">
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true">
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/main_content"
@@ -19,22 +19,30 @@
             android:layout_height="wrap_content"
             app:elevation="@dimen/toolbar_elevation"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="?attr/colorPrimary"
+                    app:layout_scrollFlags="scroll|enterAlways"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tab_layout"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    app:tabIndicatorColor="?attr/colorAccent"
+                    app:tabMode="scrollable"
+                    app:tabSelectedTextColor="#fff"
+                    app:tabTextColor="#bfff" />
         </android.support.design.widget.AppBarLayout>
-        <!--用于替换为Fragment-->
-        <FrameLayout
-            android:id="@+id/container"
+        <!--ViewPager-->
+        <android.support.v4.view.ViewPager
+            android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+            android:saveEnabled="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView

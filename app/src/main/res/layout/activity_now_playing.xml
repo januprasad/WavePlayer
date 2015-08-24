@@ -29,7 +29,9 @@
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
                 app:actualImageScaleType="centerCrop"
-                app:backgroundImage="@android:color/holo_blue_light" />
+                app:backgroundImage="@mipmap/default_artwork"
+                app:failureImage="@mipmap/default_artwork"
+                app:failureImageScaleType="centerCrop"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -49,8 +51,8 @@
             android:id="@+id/reflected_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
             android:clickable="false"
+            android:scaleType="centerCrop"
             android:contentDescription="@string/image_description"/>
         <RelativeLayout
             android:layout_width="match_parent"

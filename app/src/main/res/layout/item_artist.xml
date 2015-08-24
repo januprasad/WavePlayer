@@ -16,7 +16,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             fresco:actualImageScaleType="centerCrop"
-            fresco:backgroundImage="@android:color/holo_blue_light"
+            fresco:backgroundImage="@mipmap/default_artwork"
+            fresco:failureImage="@mipmap/default_artwork"
+            fresco:failureImageScaleType="centerCrop"
             fresco:fadeDuration="300" />
 
         <RelativeLayout

@@ -27,15 +27,15 @@ public class FetchUtils {
 
     private static final String TAG = "FetchUtils";
     // API key for Last.fm. Please use your own.
-    private static final String API_KEY = "a9fc65293034b84b83d20c6e2ecda4b5";
-    private static boolean lastFmInitialized = false;
-
-    public static void initLastFm(Context context) {
-        Caller.getInstance().setCache(new FileSystemCache(new File(context.getExternalCacheDir() + "/lastfm/")));
-        Caller.getInstance().setUserAgent("Wave/" + BuildConfig.VERSION_NAME);
-
-        lastFmInitialized = true;
-    }
+//    private static final String API_KEY = "a9fc65293034b84b83d20c6e2ecda4b5";
+//    private static boolean lastFmInitialized = false;
+//
+//    public static void initLastFm(Context context) {
+//        Caller.getInstance().setCache(new FileSystemCache(new File(context.getExternalCacheDir() + "/lastfm/")));
+//        Caller.getInstance().setUserAgent("Wave/" + BuildConfig.VERSION_NAME);
+//
+//        lastFmInitialized = true;
+//    }
 
     /**
      * 根据专辑ID,获取到Art的URI
@@ -62,7 +62,11 @@ public class FetchUtils {
         ArrayList<Album> albums = LibManager.getAlbums();
         for (Album a : albums) {
             if (a.getmAlbumId() == albumId) {
-                return BitmapFactory.decodeFile(a.getmAlbumArt());
+                if (a.getmAlbumArt() != null) {
+                    return BitmapFactory.decodeFile(a.getmAlbumArt());
+                } else {
+                    return null;
+                }
             }
         }
         return null;
@@ -88,23 +92,23 @@ public class FetchUtils {
         return null;
     }
 
-    /**
-     * 从Last.fm获取艺术家信息
-     * @param context
-     * @param artistName
-     * @return
-     */
-    public static Artist fetchArtistInfo(Context context, String artistName) {
-        if (artistName.equalsIgnoreCase(context.getString(R.string.no_artist)))
-            return null;
-        if (!lastFmInitialized)
-            initLastFm(context);
-        ConnectivityManager network = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if(network.getActiveNetworkInfo() != null &&
-                network.getActiveNetworkInfo().isAvailable() && !network.getActiveNetworkInfo().isRoaming()) {
-
-            return  Artist.getInfo(artistName, API_KEY);
-        }
-        return null;
-    }
+//    /**
+//     * 从Last.fm获取艺术家信息
+//     * @param context
+//     * @param artistName
+//     * @return
+//     */
+//    public static Artist fetchArtistInfo(Context context, String artistName) {
+//        if (artistName.equalsIgnoreCase(context.getString(R.string.no_artist)))
+//            return null;
+//        if (!lastFmInitialized)
+//            initLastFm(context);
+//        ConnectivityManager network = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//        if(network.getActiveNetworkInfo() != null &&
+//                network.getActiveNetworkInfo().isAvailable() && !network.getActiveNetworkInfo().isRoaming()) {
+//
+//            return  Artist.getInfo(artistName, API_KEY);
+//        }
+//        return null;
+//    }
 }

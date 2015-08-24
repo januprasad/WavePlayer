@@ -5,12 +5,16 @@
     <string name="image_description">image</string>
 
     <!-- Menu -->
-    <string name="nav_music">本地音乐</string>
-    <string name="nav_artist">艺术家</string>
-    <string name="nav_album">专辑</string>
+    <string name="nav_library">Library</string>
     <string name="nav_quit">退出</string>
 
-    <string name="no_artist">Unknow</string>
+    <string name="tab_playlist">歌单</string>
+    <string name="tab_music">歌曲</string>
+    <string name="tab_artist">艺术家</string>
+    <string name="tab_album">专辑</string>
+    <string name="tab_genres">类型</string>
+
+    <string name="no_artist">UnKnow</string>
     <string name="no_album">0 album</string>
     <string name="album">Album</string>
     <string name="song">Song</string>

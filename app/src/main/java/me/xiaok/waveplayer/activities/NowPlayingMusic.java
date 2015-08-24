@@ -2,8 +2,11 @@ package me.xiaok.waveplayer.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.graphics.Palette;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,12 +14,23 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.common.executors.CallerThreadExecutor;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.DataSource;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.core.ImagePipeline;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
 import me.xiaok.waveplayer.Player;
 import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
+import me.xiaok.waveplayer.WaveApplication;
 import me.xiaok.waveplayer.models.Song;
+import me.xiaok.waveplayer.models.viewholders.AlbumViewHolder;
 import me.xiaok.waveplayer.utils.FetchUtils;
 import me.xiaok.waveplayer.utils.MusicUtils;
 
@@ -82,10 +96,15 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         mPrevious = (ImageView) findViewById(R.id.control_previous);
         mReflectedImage = (ImageView) findViewById(R.id.reflected_image);
 
-        mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(song.getmAlbumId()));
         mSongTitle.setText(song.getmSongName());
         mSongInfo.setText(song.getmArtistName() + "|" + song.getmAblumName());
-        Bitmap reflectedImage = MusicUtils.createReflectedImage(FetchUtils.fetchAlbumArtLocal(song.getmAlbumId()));
+        Bitmap reflectedImage;
+        if (FetchUtils.fetchAlbumArtLocal(song.getmAlbumId()) == null) {
+            reflectedImage = MusicUtils.createReflectedImage(BitmapFactory.decodeResource(getResources(), R.mipmap.default_artwork));
+        } else {
+            mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(song.getmAlbumId()));
+            reflectedImage = MusicUtils.createReflectedImage(FetchUtils.fetchAlbumArtLocal(song.getmAlbumId()));
+        }
         mReflectedImage.setImageBitmap(reflectedImage);
         mTogglePlay.setOnClickListener(this);
         mNext.setOnClickListener(this);
@@ -115,8 +134,13 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         Player.Info info = intent.getExtras().getParcelable(Player.INFO);
 
         if (info != null) {
-            mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(info.song.getmAlbumId()));
-            Bitmap reflectedImage = MusicUtils.createReflectedImage(FetchUtils.fetchAlbumArtLocal(info.song.getmAlbumId()));
+            Bitmap reflectedImage;
+            if (FetchUtils.fetchAlbumArtLocal(info.song.getmAlbumId()) == null) {
+                reflectedImage = MusicUtils.createReflectedImage(BitmapFactory.decodeResource(getResources(), R.mipmap.default_artwork));
+            } else {
+                mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(info.song.getmAlbumId()));
+                reflectedImage = MusicUtils.createReflectedImage(FetchUtils.fetchAlbumArtLocal(info.song.getmAlbumId()));
+            }
             mReflectedImage.setImageBitmap(reflectedImage);
             mSongTitle.setText(info.song.getmSongName());
             mSongInfo.setText(info.song.getmArtistName() + "|" + info.song.getmAblumName());

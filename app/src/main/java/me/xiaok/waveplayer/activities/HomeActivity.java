@@ -2,8 +2,12 @@ package me.xiaok.waveplayer.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,8 +27,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
-    //当前的Fragment
-    private Fragment mCurrentFragment;
+    private CustomPagerAdapter mAdapter;
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_home;
@@ -40,9 +43,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
         setupInstance();
 
-        mCurrentFragment = new SongsFragment();
-        mToolBar.setTitle(R.string.nav_music);
-        transactionTo(mCurrentFragment);
+        mToolBar.setTitle(R.string.nav_library);
     }
 
     @Override
@@ -65,46 +66,96 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView)findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
+
+        ViewPager pager = (ViewPager) findViewById(R.id.view_pager);
+        mAdapter = new CustomPagerAdapter(getSupportFragmentManager());
+        pager.setAdapter(mAdapter);
+
+        TabLayout tabLayout = (TabLayout)findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(pager);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+
+        pager.setCurrentItem(1);
+
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
         menuItem.setChecked(true);
         switch (menuItem.getItemId()) {
-            case R.id.nav_song:
-                if (!(mCurrentFragment instanceof SongsFragment)) {
-                    mCurrentFragment = new SongsFragment();
-                    mToolBar.setTitle(R.string.nav_music);
-                }
-                break;
-            case R.id.nav_artist:
-                if (!(mCurrentFragment instanceof ArtistsFragment)) {
-                    mCurrentFragment = new ArtistsFragment();
-                    mToolBar.setTitle(R.string.nav_artist);
-                }
-                break;
-            case R.id.nav_album:
-                if (!(mCurrentFragment instanceof AlbumsFragment)) {
-                    mCurrentFragment = new AlbumsFragment();
-                    mToolBar.setTitle(R.string.nav_album);
-                }
+            case R.id.nav_library:
                 break;
             case R.id.nav_quit:
                 PlayerController.stop();
                 finish();
                 break;
         }
-        transactionTo(mCurrentFragment);
         mDrawerLayout.closeDrawers();
         return true;
     }
 
-    /**
-     * 跳转Fragment
-     * @param fragment
-     */
-    private void transactionTo(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
-    }
+    public class CustomPagerAdapter extends FragmentPagerAdapter {
 
+        private Fragment mSongsFragment;
+        private Fragment mArtistsFragment;
+        private Fragment mAlbumsFragment;
+
+        public CustomPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    //播放列表
+                    break;
+                case 1:
+                    //歌曲
+                    if (mSongsFragment == null) {
+                        mSongsFragment = new SongsFragment();
+                    }
+                    return mSongsFragment;
+                case 2:
+                    //艺术家
+                    if (mArtistsFragment == null) {
+                        mArtistsFragment = new ArtistsFragment();
+                    }
+                    return mArtistsFragment;
+                case 3:
+                    //专辑
+                    if (mAlbumsFragment == null) {
+                        mAlbumsFragment = new AlbumsFragment();
+                    }
+                    return mAlbumsFragment;
+                case 4:
+                    //类型
+                    break;
+            }
+            return new Fragment();
+        }
+
+        @Override
+        public int getCount() {
+            return 5;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return getResources().getString(R.string.tab_playlist);
+                case 1:
+                    return getResources().getString(R.string.tab_music);
+                case 2:
+                    return getResources().getString(R.string.tab_artist);
+                case 3:
+                    return getResources().getString(R.string.tab_album);
+                case 4:
+                    return getResources().getString(R.string.tab_genres);
+                default:
+                    return "tab: " + position;
+            }
+        }
+    }
 }

@@ -306,4 +306,18 @@ public class LibManager {
         }
         return songs;
     }
+
+    /**
+     * 根据AlbumId获取专辑
+     * @param albumId
+     * @return
+     */
+    public static Album getAlbumById(int albumId) {
+        for (Album a: mAlbumLib) {
+            if (a.getmAlbumId() == albumId) {
+                return a;
+            }
+        }
+        return null;
+    }
 }
