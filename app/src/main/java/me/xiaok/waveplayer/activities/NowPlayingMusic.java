@@ -42,6 +42,8 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
 
     public static final String EXTRA_ALBUM = "NowPlayingMusic";
 
+
+    private boolean isPlaying = false;
     private Song song;
     private SimpleDraweeView mSongImg;
     private TextView mSongTitle;
@@ -115,6 +117,11 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.control_toggle_play:
+                if (isPlaying) {
+                    mTogglePlay.setImageResource(R.mipmap.ic_play_arrow_white_48dp);
+                } else {
+                    mTogglePlay.setImageResource(R.mipmap.ic_pause_white_48dp);
+                }
                 PlayerController.togglePlay();
                 break;
             case R.id.control_next:
@@ -132,7 +139,6 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
     @Override
     public void update(Intent intent) {
         Player.Info info = intent.getExtras().getParcelable(Player.INFO);
-
         if (info != null) {
             Bitmap reflectedImage;
             if (FetchUtils.fetchAlbumArtLocal(info.song.getmAlbumId()) == null) {
@@ -146,8 +152,10 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
             mSongInfo.setText(info.song.getmArtistName() + "|" + info.song.getmAblumName());
             if (!(info.isPlaying || info.isPrepared)) {
                 mTogglePlay.setImageResource(R.mipmap.ic_play_arrow_white_48dp);
+                isPlaying = false;
             } else {
                 mTogglePlay.setImageResource(R.mipmap.ic_pause_white_48dp);
+                isPlaying = true;
             }
         }
     }

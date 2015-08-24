@@ -286,7 +286,6 @@ public class PlayerService extends Service {
     public void onDestroy() {
         finish();
         super.onDestroy();
-
     }
 
     /**

@@ -102,7 +102,7 @@
                         android:background="?selectableItemBackgroundBorderless"
                         android:contentDescription="@string/image_description"
                         android:padding="@dimen/now_playing_control_padding"
-                        android:src="@mipmap/ic_play_arrow_white_48dp" />
+                        android:src="@mipmap/ic_pause_white_48dp" />
 
                     <ImageView
                         android:id="@+id/control_previous"
