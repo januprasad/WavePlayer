@@ -63,7 +63,12 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         mSongDuration.setText(MusicUtils.durationToString(s.getmDuration()));
 
         if (flag) {
-            mSongImage.setImageURI(Uri.parse("file://" + LibManager.getSongAlbum(s).get(0).getmAlbumArt()));
+            if (LibManager.getSongAlbum(s).get(0).getmAlbumArt() == null) {
+                mSongImage.setImageURI(Uri.parse("res:///" + R.mipmap.default_artwork));
+            } else {
+                mSongImage.setImageURI(Uri.parse("file://" + LibManager.getSongAlbum(s).get(0).getmAlbumArt()));
+
+            }
         } else {
             mSongImage.setVisibility(View.GONE);
             mRoot.setPadding(12,5,12,5);
@@ -74,7 +79,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
      * 设置本歌曲所在的歌曲列表
      * @param songList
      */
-    public void setSongList(ArrayList songList) {
+    public void setSongList(ArrayList<Song> songList) {
         mSongList = songList;
     }
 

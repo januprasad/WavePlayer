@@ -64,7 +64,7 @@ public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.On
                 break;
             case R.id.root:
                 LogUtils.v(TAG, ref.toString());
-                Navigate.to(itemView.getContext(), ArtistActivity.class, ArtistActivity.EXTRA_ALBUM, ref);
+                Navigate.to(itemView.getContext(), ArtistActivity.class, ArtistActivity.EXTRA_ARTIST, ref);
                 break;
         }
     }

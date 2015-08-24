@@ -23,11 +23,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         mAlbumList = albumList;
     }
 
-    public void setmAlbumList(ArrayList<Album> albumList) {
-        mAlbumList = albumList;
-        notifyDataSetChanged();
-    }
-
     @Override
     public int getItemCount() {
         return mAlbumList.size();

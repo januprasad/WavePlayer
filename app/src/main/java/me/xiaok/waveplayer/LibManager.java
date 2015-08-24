@@ -8,7 +8,10 @@ import java.util.ArrayList;
 
 import me.xiaok.waveplayer.models.Album;
 import me.xiaok.waveplayer.models.Artist;
+import me.xiaok.waveplayer.models.Genre;
+import me.xiaok.waveplayer.models.PlayList;
 import me.xiaok.waveplayer.models.Song;
+import me.xiaok.waveplayer.utils.LogUtils;
 
 /**
  * 该类是实体管理类
@@ -18,9 +21,13 @@ import me.xiaok.waveplayer.models.Song;
  */
 public class LibManager {
 
+    public static final String TAG = "LibManager";
+
     public static final ArrayList<Song> mSongLib = new ArrayList<>();
     public static final ArrayList<Artist> mArtistLib = new ArrayList<>();
     public static final ArrayList<Album> mAlbumLib = new ArrayList<>();
+    public static final ArrayList<PlayList> mPlayListLib = new ArrayList<>();
+    public static final ArrayList<Genre> mGenreLib = new ArrayList<>();
 
     /**
      * 歌曲查询
@@ -57,8 +64,18 @@ public class LibManager {
             MediaStore.Audio.Albums.ALBUM_ART,
     };
 
+    public static final String[] playListProjection = new String[]{
+
+    };
+
+    public static final String[] genreProjection = new String[]{
+            MediaStore.Audio.Genres._ID,
+            MediaStore.Audio.Genres.NAME
+    };
+
     /**
      * 扫描所有列表
+     *
      * @param context
      */
     public static void scanAll(Context context) {
@@ -66,10 +83,12 @@ public class LibManager {
         setSongLib(scanSongs(context));
         setArtistLib(scanArtists(context));
         setAlbumLib(scanAlbums(context));
+        setGenreLib(scanGenres(context));
     }
 
     /**
      * 扫描歌曲
+     *
      * @param context
      * @return 歌曲列表
      */
@@ -107,6 +126,7 @@ public class LibManager {
 
     /**
      * 扫描艺术家
+     *
      * @param context
      * @return 艺术家列表
      */
@@ -139,6 +159,7 @@ public class LibManager {
 
     /**
      * 扫描专辑
+     *
      * @param context
      * @return 专辑列表
      */
@@ -172,10 +193,70 @@ public class LibManager {
         return albums;
     }
 
+    /**
+     * 扫描播放清单
+     *
+     * @param context
+     * @return
+     */
+    public static ArrayList<PlayList> scanPlayList(Context context) {
+        return null;
+    }
+
+    /**
+     * 扫描类型， 并将Song与Genre关联
+     *
+     * @param context
+     * @return
+     */
+    public static ArrayList<Genre> scanGenres(Context context) {
+        LogUtils.v(TAG, "scanGenres() called");
+        ArrayList<Genre> genres = new ArrayList<>();
+        Cursor cursor = context.getContentResolver().query(
+                MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
+                genreProjection,
+                null,
+                null,
+                MediaStore.Audio.Genres.NAME + " ASC");
+
+        LogUtils.v(TAG, cursor.getCount() + "");
+        for (int i = 0; i < cursor.getCount(); i++) {
+            cursor.moveToPosition(i);
+            int genreId = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Genres._ID));
+            String genreName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Genres.NAME));
+
+            //LogUtils.v(TAG, "get genres : id = " + genreId + "  name = " + genreName);
+            Genre genre = new Genre(genreId, genreName);
+            genres.add(genre);
+
+            //将歌曲与类型关联
+            Cursor genreCursor = context.getContentResolver().query(
+                    MediaStore.Audio.Genres.Members.getContentUri("external", genreId),
+                    new String[]{MediaStore.Audio.Media._ID},
+                    MediaStore.Audio.Media.IS_MUSIC + " != 0 ",
+                    null,
+                    null
+            );
+            genreCursor.moveToFirst();
+            for (int j = 0; j < genreCursor.getCount(); j++) {
+                genreCursor.moveToPosition(j);
+                int index = genreCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+                final Song song = findSongById(genreCursor.getInt(index));
+                if (song != null) {
+                    song.setmGenreId(genreId);
+                }
+            }
+            genreCursor.close();
+        }
+
+        cursor.close();
+        return genres;
+    }
+
     public static boolean isEmpty() {
         boolean flag = false;
 
-        if (mSongLib.isEmpty() && mArtistLib.isEmpty() && mAlbumLib.isEmpty()){
+        if (mSongLib.isEmpty() && mArtistLib.isEmpty() && mAlbumLib.isEmpty() && mGenreLib.isEmpty()) {
             flag = true;
         }
 
@@ -213,7 +294,18 @@ public class LibManager {
     }
 
     /**
+     * 设置类型列表
+     *
+     * @param genreList
+     */
+    public static void setGenreLib(ArrayList<Genre> genreList) {
+        mGenreLib.clear();
+        mGenreLib.addAll(genreList);
+    }
+
+    /**
      * 获取歌曲列表
+     *
      * @return
      */
     public static ArrayList<Song> getSongs() {
@@ -222,6 +314,7 @@ public class LibManager {
 
     /**
      * 获取艺术家列表
+     *
      * @return
      */
     public static ArrayList<Artist> getArtists() {
@@ -230,10 +323,20 @@ public class LibManager {
 
     /**
      * 获取专辑列表
+     *
      * @return
      */
     public static ArrayList<Album> getAlbums() {
         return mAlbumLib;
+    }
+
+    /**
+     * 获取类型列表
+     *
+     * @return
+     */
+    public static ArrayList<Genre> getGenres() {
+        return mGenreLib;
     }
 
     /**
@@ -247,6 +350,7 @@ public class LibManager {
 
     /**
      * 获取专辑下的所有歌曲
+     *
      * @param album
      * @return 同一专辑的所有歌
      */
@@ -263,6 +367,7 @@ public class LibManager {
 
     /**
      * 获取歌曲的专辑,每首歌只有一个专辑
+     *
      * @param song
      * @return
      */
@@ -279,6 +384,7 @@ public class LibManager {
 
     /**
      * 获取歌手的所有专辑
+     *
      * @param artist
      * @return
      */
@@ -294,6 +400,7 @@ public class LibManager {
 
     /**
      * 获取该歌手的所有歌曲
+     *
      * @param artist
      * @return
      */
@@ -308,14 +415,31 @@ public class LibManager {
     }
 
     /**
-     * 根据AlbumId获取专辑
-     * @param albumId
+     * 获取一个类型下的所有歌曲
+     *
+     * @param genre
      * @return
      */
-    public static Album getAlbumById(int albumId) {
-        for (Album a: mAlbumLib) {
-            if (a.getmAlbumId() == albumId) {
-                return a;
+    public static ArrayList<Song> getGenreSongs(Genre genre) {
+        ArrayList<Song> songs = new ArrayList<>();
+        for (Song s : mSongLib) {
+            if (s.getmGenreId() == genre.getmGenreId()) {
+                songs.add(s);
+            }
+        }
+        return songs;
+    }
+
+    /**
+     * 根据Id寻找歌曲
+     *
+     * @param songId
+     * @return
+     */
+    public static Song findSongById(int songId) {
+        for (Song s : mSongLib) {
+            if (s.getmSongId() == songId) {
+                return s;
             }
         }
         return null;

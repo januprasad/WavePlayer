@@ -11,15 +11,15 @@ import android.view.ViewGroup;
 
 import me.xiaok.waveplayer.LibManager;
 import me.xiaok.waveplayer.R;
-import me.xiaok.waveplayer.adapters.AlbumAdapter;
+import me.xiaok.waveplayer.adapters.GenreAdapter;
 
 /**
- * Created by GeeKaven on 15/8/16.
+ * Created by GeeKaven on 15/8/24.
  */
-public class AlbumsFragment extends Fragment {
+public class GenreFragment extends Fragment {
 
     private RecyclerView mList;
-    private AlbumAdapter mAdapter;
+    private GenreAdapter mAdapter;
 
     @Nullable
     @Override
@@ -27,17 +27,11 @@ public class AlbumsFragment extends Fragment {
         View view = inflater.inflate(R.layout.com_list, container, false);
         mList = (RecyclerView) view.findViewById(R.id.list);
 
-        mAdapter = new AlbumAdapter(LibManager.getAlbums());
+        mAdapter = new GenreAdapter(LibManager.getGenres());
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
 
         mList.setLayoutManager(layoutManager);
         mList.setAdapter(mAdapter);
         return view;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
     }
 }

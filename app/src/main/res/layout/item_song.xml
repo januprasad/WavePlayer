@@ -19,7 +19,7 @@
         fresco:backgroundImage="@mipmap/default_artwork"
         fresco:failureImage="@mipmap/default_artwork"
         fresco:failureImageScaleType="centerInside"
-        fresco:roundAsCircle="true"/>
+        fresco:roundAsCircle="true" />
 
     <RelativeLayout
         android:layout_width="match_parent"

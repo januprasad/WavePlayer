@@ -24,6 +24,7 @@
         <activity android:name=".activities.AlbumActivity"/>
         <activity android:name=".activities.ArtistActivity"/>
         <activity android:name=".activities.NowPlayingMusic"/>
+        <activity android:name=".activities.GenreActivity"/>
 
         <!-- Player Service -->
         <service android:name=".PlayerService"

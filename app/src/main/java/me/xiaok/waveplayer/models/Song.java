@@ -49,6 +49,11 @@ public class Song implements Parcelable {
      */
     private int mArtistId;
 
+    /**
+     * 类型Id
+     */
+    private int mGenreId;
+
     public Song(final int songId, final String songName, final String artistName,
                 final String ablumName, final long duration, final String songPath,
                 final int albumId, final int artistId) {
@@ -60,6 +65,7 @@ public class Song implements Parcelable {
         this.mSongPath = songPath;
         this.mAlbumId = albumId;
         this.mArtistId = artistId;
+        this.mGenreId = -1;
     }
 
     public Song(Parcel source) {
@@ -71,6 +77,7 @@ public class Song implements Parcelable {
         mSongPath = source.readString();
         mAlbumId = source.readInt();
         mArtistId = source.readInt();
+        mGenreId = source.readInt();
     }
 
     @Override
@@ -100,6 +107,7 @@ public class Song implements Parcelable {
         parcel.writeString(mSongPath);
         parcel.writeInt(mAlbumId);
         parcel.writeInt(mArtistId);
+        parcel.writeInt(mGenreId);
     }
 
     @Override
@@ -137,5 +145,13 @@ public class Song implements Parcelable {
 
     public int getmArtistId() {
         return mArtistId;
+    }
+
+    public int getmGenreId() {
+        return mGenreId;
+    }
+
+    public void setmGenreId(int mGenreId) {
+        this.mGenreId = mGenreId;
     }
 }
