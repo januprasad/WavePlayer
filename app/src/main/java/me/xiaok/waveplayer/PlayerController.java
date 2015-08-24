@@ -1,5 +1,6 @@
 package me.xiaok.waveplayer;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import java.util.ArrayList;
 
 import me.xiaok.waveplayer.models.Song;
+import me.xiaok.waveplayer.utils.LogUtils;
 
 /**
  * 播放器控制类，用于控制Service中的播放器
@@ -17,6 +19,7 @@ public class PlayerController {
     public static final String TAG = "PlayerController";
 
     public static Context application;
+
 
     /**
      * 启动播放器服务
@@ -48,7 +51,15 @@ public class PlayerController {
         Intent intent = getBaseIntent(PlayerService.ACTION_SET_QUEUE);
         Bundle bundle = new Bundle();
         bundle.putInt(Player.POSITION, position);
-        bundle.putParcelableArrayList(Player.QUEUQ, queue);
+        bundle.putParcelableArrayList(Player.QUEUE, queue);
+        intent.putExtras(bundle);
+        application.sendBroadcast(intent);
+    }
+
+    public static void addQueue(final ArrayList<Song> queue) {
+        Intent intent = getBaseIntent(PlayerService.ACTION_ADD_QUEUE);
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(PlayerService.ACTION_ADD_QUEUE, queue);
         intent.putExtras(bundle);
         application.sendBroadcast(intent);
     }

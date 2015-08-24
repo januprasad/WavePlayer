@@ -25,8 +25,9 @@ import me.xiaok.waveplayer.utils.MediaPlayerManaged;
 public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener{
 
     private static final String TAG = "Player";
-    public static final String QUEUQ = "Queue";
+    public static final String QUEUE = "Queue";
     public static final String POSITION = "Position";
+
     //播放切换时发送播放歌曲的状态
     public static final String SONG_CHANGE = "me.xiaok.wavemusic.SONG_CHANGE";
     public static final String INFO = "info";
@@ -137,6 +138,14 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
     public void setQueue(ArrayList<Song> list, int positon) {
         this.queue = list;
         this.queuePosition = positon;
+    }
+
+    /**
+     * 将一组歌添加到播放队列
+     * @param list
+     */
+    public void addQueue(ArrayList<Song> list) {
+        this.queue.addAll(list);
     }
 
     /**

@@ -24,7 +24,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected AppBarLayout mAppBar;
     protected Toolbar mToolBar;
-
+    //正在播放音乐的信息
+    public static Player.Info info;
 
     public void toolBarClick() {}
 
@@ -75,6 +76,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            info = intent.getExtras().getParcelable(Player.INFO);
             update(intent);
         }
     };

@@ -113,6 +113,9 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         switch (item.getItemId()) {
             case R.id.add_queue:
                 //添加到队列
+                ArrayList<Song> songs = new ArrayList<>();
+                songs.add(ref);
+                PlayerController.addQueue(songs);
                 break;
             case R.id.add_playlist:
                 //添加到播放列表

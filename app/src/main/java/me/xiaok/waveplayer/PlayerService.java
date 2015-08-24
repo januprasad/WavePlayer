@@ -43,6 +43,8 @@ public class PlayerService extends Service {
     public static final String ACTION_PAUSE = "me.xiaok.waveplayer.ACTION_PAUSE";
     public static final String ACTION_STOP = "me.xiaok.waveplayer.ACTION_STOP";
     public static final String ACTION_SET_QUEUE = "me.xiaok.waveplayer.SET_QUEUE";
+    public static final String ACTION_ADD_QUEUE = "me.xiaok.waveplayer.ADD_QUEUE";
+    public static final String ACTION_DELETE_SONG = "me.xiaok.waveplayer.DELETE_SONG";
 
     /**
      * 全局变量
@@ -256,7 +258,7 @@ public class PlayerService extends Service {
             switch (intent.getAction()) {
                 case ACTION_SET_QUEUE:
                     Bundle bundle = intent.getExtras();
-                    ArrayList<Song> songs = bundle.getParcelableArrayList(Player.QUEUQ);
+                    ArrayList<Song> songs = bundle.getParcelableArrayList(Player.QUEUE);
                     instance.player.setQueue(songs, bundle.getInt(Player.POSITION, 0));
                     instance.player.begin();
                     break;
@@ -277,6 +279,13 @@ public class PlayerService extends Service {
                     break;
                 case ACTION_STOP:
                     instance.stop();
+                    break;
+                case ACTION_ADD_QUEUE:
+                    Bundle addBundle = intent.getExtras();
+                    ArrayList<Song> songList = addBundle.getParcelableArrayList(PlayerService.ACTION_ADD_QUEUE);
+                    instance.player.addQueue(songList);
+                    break;
+                case ACTION_DELETE_SONG:
                     break;
             }
         }

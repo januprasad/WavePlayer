@@ -12,10 +12,13 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import java.util.ArrayList;
+
 import me.xiaok.waveplayer.LibManager;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.activities.ArtistActivity;
 import me.xiaok.waveplayer.models.Artist;
+import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.LogUtils;
 import me.xiaok.waveplayer.utils.Navigate;
 

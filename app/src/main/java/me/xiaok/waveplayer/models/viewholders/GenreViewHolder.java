@@ -14,6 +14,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import java.util.ArrayList;
 
 import me.xiaok.waveplayer.LibManager;
+import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.activities.GenreActivity;
 import me.xiaok.waveplayer.models.Genre;
@@ -85,8 +86,10 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.play_all:
+                PlayerController.setQueueAndPosition(mSongList, 0);
                 break;
             case R.id.add_queue:
+                PlayerController.addQueue(mSongList);
                 break;
             case R.id.add_playlist:
                 break;

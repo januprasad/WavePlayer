@@ -18,6 +18,7 @@ import me.xiaok.waveplayer.fragments.AlbumsFragment;
 import me.xiaok.waveplayer.fragments.ArtistsFragment;
 import me.xiaok.waveplayer.fragments.GenreFragment;
 import me.xiaok.waveplayer.fragments.SongsFragment;
+import me.xiaok.waveplayer.utils.Navigate;
 
 /**
  * 主activity
@@ -58,6 +59,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+            case R.id.action_settings:
+                Navigate.to(this, NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, info.song);
                 return true;
         }
         return super.onOptionsItemSelected(item);

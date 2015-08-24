@@ -35,5 +35,6 @@
         <receiver android:name=".PlayerService$Listener"
             android:process=":player"
             android:exported="false"/>
+
     </application>
 </manifest>
