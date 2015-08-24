@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.facebook.common.executors.CallerThreadExecutor;
@@ -44,6 +45,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
 
     private boolean isPlaying = false;
     private Song song;
+    private SeekBar mSeekBar;
     private SimpleDraweeView mSongImg;
     private TextView mSongTitle;
     private TextView mSongInfo;
@@ -89,6 +91,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
      */
     public void setupInstance() {
         mToolBar.setTitle("");
+        mSeekBar = (SeekBar) findViewById(R.id.song_seekbar);
         mSongImg = (SimpleDraweeView) findViewById(R.id.song_image);
         mSongTitle = (TextView) findViewById(R.id.song_title);
         mSongInfo = (TextView) findViewById(R.id.song_info);

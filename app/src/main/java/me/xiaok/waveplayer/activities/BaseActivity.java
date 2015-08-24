@@ -76,8 +76,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     public BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            info = intent.getExtras().getParcelable(Player.INFO);
-            update(intent);
+            if (intent.getAction().equals(Player.SONG_CHANGE)) {
+                info = intent.getExtras().getParcelable(Player.INFO);
+                update(intent);
+            }
+
         }
     };
 

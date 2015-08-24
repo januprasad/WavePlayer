@@ -46,12 +46,18 @@ public class PlayerController {
         return intent;
     }
 
-    public static void setQueueAndPosition(final ArrayList<Song> queue, int position) {
-
-        Intent intent = getBaseIntent(PlayerService.ACTION_SET_QUEUE);
+    public static void playAll(final ArrayList<Song> queue) {
+        Intent intent = getBaseIntent(PlayerService.ACTION_PLAY_ALL);
         Bundle bundle = new Bundle();
-        bundle.putInt(Player.POSITION, position);
-        bundle.putParcelableArrayList(Player.QUEUE, queue);
+        bundle.putParcelableArrayList(PlayerService.ACTION_PLAY_ALL, queue);
+        intent.putExtras(bundle);
+        application.sendBroadcast(intent);
+    }
+
+    public static void playSong(final Song song) {
+        Intent intent = getBaseIntent(PlayerService.ACTION_PLAY_SONG);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(PlayerService.ACTION_PLAY_SONG, song);
         intent.putExtras(bundle);
         application.sendBroadcast(intent);
     }

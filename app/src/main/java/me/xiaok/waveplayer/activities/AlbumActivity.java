@@ -111,7 +111,7 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
         switch (view.getId()) {
             case R.id.fab_play:
                 //将此专辑下的所有歌曲添加到播放队列，并且播放
-                PlayerController.setQueueAndPosition(mSongList, 0);
+                PlayerController.playAll(mSongList);
                 Navigate.to(this, NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, mSongList.get(0));
                 break;
         }

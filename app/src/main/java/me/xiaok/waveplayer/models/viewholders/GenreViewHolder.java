@@ -86,7 +86,7 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.play_all:
-                PlayerController.setQueueAndPosition(mSongList, 0);
+                PlayerController.playAll(mSongList);
                 break;
             case R.id.add_queue:
                 PlayerController.addQueue(mSongList);

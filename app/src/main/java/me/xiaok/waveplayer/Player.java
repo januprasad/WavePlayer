@@ -68,7 +68,6 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
             LogUtils.v(TAG, "art is null");
         }
 
-
         try {
             mediaPlayer.setDataSource(queue.get(queuePosition).getmSongPath());
             mediaPlayer.prepareAsync();
@@ -138,6 +137,25 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
     public void setQueue(ArrayList<Song> list, int positon) {
         this.queue = list;
         this.queuePosition = positon;
+    }
+
+    /**
+     * 从头开始播放所有音乐
+     * @param list
+     */
+    public void playAll(ArrayList<Song> list) {
+        this.queue = list;
+        this.queuePosition = 0;
+    }
+
+    /**
+     * 播放单个音乐
+     * @param song
+     */
+    public void playSong(Song song) {
+        this.queue = new ArrayList<>();
+        queue.add(song);
+        this.queuePosition = 0;
     }
 
     /**

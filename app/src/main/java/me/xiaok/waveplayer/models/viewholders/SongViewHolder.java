@@ -42,7 +42,6 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     private Song ref;
     private int position;
-    private ArrayList<Song> mSongList;
 
     public SongViewHolder(View itemView) {
         super(itemView);
@@ -78,13 +77,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         }
     }
 
-    /**
-     * 设置本歌曲所在的歌曲列表
-     * @param songList
-     */
-    public void setSongList(ArrayList<Song> songList) {
-        mSongList = songList;
-    }
+
 
     /**
      * 处理点击Item点击事件
@@ -95,7 +88,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         switch (view.getId()) {
             case R.id.root:
                 LogUtils.v(TAG, ref.getmSongName());
-                PlayerController.setQueueAndPosition(mSongList, position);
+                PlayerController.playSong(ref);
                 Navigate.to(itemView.getContext(), NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, ref);
                 break;
             case R.id.click_more:

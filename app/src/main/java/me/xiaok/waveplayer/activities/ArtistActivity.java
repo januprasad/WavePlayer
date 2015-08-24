@@ -134,7 +134,7 @@ public class ArtistActivity extends BaseActivity implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fab_play:
-                PlayerController.setQueueAndPosition(mSongList, 0);
+                PlayerController.playAll(mSongList);
                 Navigate.to(this, NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, mSongList.get(0));
                 break;
         }
