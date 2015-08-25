@@ -61,7 +61,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.action_settings:
-                Navigate.to(this, NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, info.song);
+//                Navigate.to(this, NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, info.song);
                 return true;
         }
         return super.onOptionsItemSelected(item);

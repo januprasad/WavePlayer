@@ -42,6 +42,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     private Song ref;
     private int position;
+    private ArrayList<Song> mSongList;
 
     public SongViewHolder(View itemView) {
         super(itemView);
@@ -54,6 +55,10 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
         mRoot.setOnClickListener(this);
         mClickMore.setOnClickListener(this);
+    }
+
+    public void setSongList(ArrayList<Song> songList) {
+        mSongList = songList;
     }
 
     public void updateViewHolder(Song s, boolean flag, int pos) {
@@ -77,8 +82,6 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         }
     }
 
-
-
     /**
      * 处理点击Item点击事件
      * @param view
@@ -87,8 +90,9 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.root:
-                LogUtils.v(TAG, ref.getmSongName());
-                PlayerController.playSong(ref);
+                LogUtils.v(TAG, ref.getmSongName() + "  " + mSongList.size());
+                PlayerController.setQueueAndPosition(mSongList, position);
+                PlayerController.begin();
                 Navigate.to(itemView.getContext(), NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, ref);
                 break;
             case R.id.click_more:
@@ -106,9 +110,9 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         switch (item.getItemId()) {
             case R.id.add_queue:
                 //添加到队列
-                ArrayList<Song> songs = new ArrayList<>();
-                songs.add(ref);
-                PlayerController.addQueue(songs);
+//                ArrayList<Song> songs = new ArrayList<>();
+//                songs.add(ref);
+//                PlayerController.addQueue(songs);
                 break;
             case R.id.add_playlist:
                 //添加到播放列表

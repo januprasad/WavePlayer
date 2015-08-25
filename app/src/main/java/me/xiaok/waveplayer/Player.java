@@ -13,7 +13,6 @@ import android.os.PowerManager;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import me.xiaok.waveplayer.models.Album;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.FetchUtils;
 import me.xiaok.waveplayer.utils.LogUtils;
@@ -25,12 +24,11 @@ import me.xiaok.waveplayer.utils.MediaPlayerManaged;
 public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener{
 
     private static final String TAG = "Player";
-    public static final String QUEUE = "Queue";
-    public static final String POSITION = "Position";
-
     //播放切换时发送播放歌曲的状态
-    public static final String SONG_CHANGE = "me.xiaok.wavemusic.SONG_CHANGE";
-    public static final String INFO = "info";
+    public static final String UPDATE_SONG_INFO = "me.xiaok.wavemusic.REFRESH_INFO";
+    public static final String EXTRA_NAME = "extra_name";
+    public static final String EXTRA_QUEUE_LIST = "queue_list";
+    public static final String EXTRA_QUEUE_LIST_POSITION = "queue_list_position";
 
     //播放列表
     private ArrayList<Song> queue;
@@ -54,6 +52,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnCompletionListener(this);
+
     }
 
     /**
@@ -137,25 +136,13 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
     public void setQueue(ArrayList<Song> list, int positon) {
         this.queue = list;
         this.queuePosition = positon;
+
     }
 
-    /**
-     * 从头开始播放所有音乐
-     * @param list
-     */
-    public void playAll(ArrayList<Song> list) {
-        this.queue = list;
-        this.queuePosition = 0;
-    }
-
-    /**
-     * 播放单个音乐
-     * @param song
-     */
-    public void playSong(Song song) {
-        this.queue = new ArrayList<>();
-        queue.add(song);
-        this.queuePosition = 0;
+    public void setSeek(int progress) {
+        if (progress <= mediaPlayer.getDuration() && getNowPlaying() != null) {
+            mediaPlayer.seekTo(progress);
+        }
     }
 
     /**
@@ -204,25 +191,39 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
         PlayerService.getInstance().notifyNowPlaying();
 
         Intent intent = new Intent();
-        intent.setAction(SONG_CHANGE);
+        intent.setAction(UPDATE_SONG_INFO);
         Bundle bundle = new Bundle();
-        bundle.putParcelable(INFO, new Info(this));
+        bundle.putParcelable(EXTRA_NAME, new Info(this));
         intent.putExtras(bundle);
         context.sendOrderedBroadcast(intent, null);
     }
 
+    /**
+     * 携带播放信息类
+     */
     public static class Info implements Parcelable {
-
         public boolean isPlaying;
         public boolean isPause;
         public boolean isPrepared;
-        public Song song;
+        //存储当前系统时间
+        public long currentTime;
+        // 存储歌曲总时间
+        public long duration;
+        // 存储歌曲当前时间
+        public long currentPosition;
+        //当前播放队列
+        public ArrayList<Song> queue;
+        public int queuePosition;
 
         public Info(Player player) {
             isPlaying = player.isPlaying();
             isPause = player.isPasue();
             isPrepared = player.isPrepared();
-            song = player.getNowPlaying();
+            currentTime = System.currentTimeMillis();
+            duration = player.getDuration();
+            currentPosition = player.getCurrentPosition();
+            queue = player.getQueue();
+            queuePosition = player.getQueuePosition();
         }
 
         public Info(Parcel parcel) {
@@ -231,7 +232,11 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
             isPlaying = booleans[0];
             isPause = booleans[1];
             isPrepared = booleans[2];
-            song = parcel.readParcelable(Song.class.getClassLoader());
+            currentTime = parcel.readLong();
+            duration = parcel.readLong();
+            currentPosition = parcel.readLong();
+            queue = parcel.createTypedArrayList(Song.CREATOR);
+            queuePosition = parcel.readInt();
         }
 
         public static final Parcelable.Creator<Info> CREATOR = new Parcelable.Creator<Info>() {
@@ -252,9 +257,13 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
         }
 
         @Override
-        public void writeToParcel(Parcel parcel, int i) {
+        public void writeToParcel(Parcel parcel, int flag) {
             parcel.writeBooleanArray(new boolean[]{isPlaying, isPause, isPrepared});
-            parcel.writeParcelable(song, PARCELABLE_WRITE_RETURN_VALUE);
+            parcel.writeLong(currentTime);
+            parcel.writeLong(duration);
+            parcel.writeLong(currentPosition);
+            parcel.writeTypedArray(queue.toArray(new Parcelable[queue.size()]), flag);
+            parcel.writeInt(queuePosition);
         }
     }
 
@@ -308,6 +317,22 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
      */
     public int getQueuePosition() {
         return queuePosition;
+    }
+
+    /**
+     * 获取当前播放队列
+     * @return
+     */
+    public ArrayList<Song> getQueue() {
+        return new ArrayList<>(queue);
+    }
+
+    /**
+     * 获取当前播放歌曲总时间
+     * @return
+     */
+    public long getDuration() {
+        return getNowPlaying().getmDuration();
     }
 
     public Bitmap getArt() {

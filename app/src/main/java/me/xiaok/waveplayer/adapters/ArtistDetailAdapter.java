@@ -72,6 +72,7 @@ public class ArtistDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case SONG_VIEW:
                 SongViewHolder holder = new SongViewHolder(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_song, parent, false));
+                holder.setSongList(mSongList);
                 return holder;
         }
         return null;

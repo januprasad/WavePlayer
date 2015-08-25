@@ -33,6 +33,7 @@ import me.xiaok.waveplayer.WaveApplication;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.models.viewholders.AlbumViewHolder;
 import me.xiaok.waveplayer.utils.FetchUtils;
+import me.xiaok.waveplayer.utils.LogUtils;
 import me.xiaok.waveplayer.utils.MusicUtils;
 
 /**
@@ -41,9 +42,10 @@ import me.xiaok.waveplayer.utils.MusicUtils;
  */
 public class NowPlayingMusic extends BaseActivity implements View.OnClickListener {
 
-    public static final String EXTRA_NOW_PLAYING = "NowPlayingMusic";
+    public static final String TAG = "NowPlayingMusic";
 
-    private boolean isPlaying = false;
+    public static final String EXTRA_NOW_PLAYING = "extra_NowPlayingMusic";
+
     private Song song;
     private SeekBar mSeekBar;
     private SimpleDraweeView mSongImg;
@@ -55,6 +57,8 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
     private ImageView mPrevious;
     private ImageView mReflectedImage;
 
+    private SeekObserver observer = null;
+    private Song currentRef = null;
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_now_playing;
@@ -68,6 +72,8 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         song = intent.getExtras().getParcelable(EXTRA_NOW_PLAYING);
 
         setupInstance();
+
+        observer = new SeekObserver();
     }
 
     @Override
@@ -84,6 +90,18 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        observer.stop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        new Thread(observer).start();
     }
 
     /**
@@ -113,24 +131,25 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         mTogglePlay.setOnClickListener(this);
         mNext.setOnClickListener(this);
         mPrevious.setOnClickListener(this);
+        mSeekBar.setOnSeekBarChangeListener(new SeekBarChangeListener());
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.control_toggle_play:
-                if (isPlaying) {
-                    mTogglePlay.setImageResource(R.mipmap.ic_play_arrow_white_48dp);
-                } else {
-                    mTogglePlay.setImageResource(R.mipmap.ic_pause_white_48dp);
-                }
                 PlayerController.togglePlay();
                 break;
             case R.id.control_next:
                 PlayerController.next();
+                observer.stop();
+                mSeekBar.setMax(Integer.MAX_VALUE);
+                mSeekBar.setProgress(Integer.MAX_VALUE);
                 break;
             case R.id.control_previous:
                 PlayerController.previous();
+                mSeekBar.setMax(Integer.MAX_VALUE);
+                mSeekBar.setProgress(0);
                 break;
         }
     }
@@ -139,26 +158,98 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
      * 更新UI
      */
     @Override
-    public void update(Intent intent) {
-        Player.Info info = intent.getExtras().getParcelable(Player.INFO);
+    public void update() {
+        Player.Info info = PlayerController.getInfo();
         if (info != null) {
-            Bitmap reflectedImage;
-            if (FetchUtils.fetchAlbumArtLocal(info.song.getmAlbumId()) == null) {
-                reflectedImage = MusicUtils.createReflectedImage(BitmapFactory.decodeResource(getResources(), R.mipmap.default_artwork));
-            } else {
-                mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(info.song.getmAlbumId()));
-                reflectedImage = MusicUtils.createReflectedImage(FetchUtils.fetchAlbumArtLocal(info.song.getmAlbumId()));
+            Song song = PlayerController.getNowPlaying();
+            if (song != null) {
+                if (currentRef != song) {
+                    if (info.isPlaying && !observer.isRunning()) {
+                        new Thread(observer).start();
+                    }
+                    Bitmap reflectedImage;
+                    if (FetchUtils.fetchAlbumArtLocal(song.getmAlbumId()) == null) {
+                        reflectedImage = MusicUtils.createReflectedImage(BitmapFactory.decodeResource(getResources(), R.mipmap.default_artwork));
+                    } else {
+                        mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(song.getmAlbumId()));
+                        reflectedImage = MusicUtils.createReflectedImage(FetchUtils.fetchAlbumArtLocal(song.getmAlbumId()));
+                    }
+                    mReflectedImage.setImageBitmap(reflectedImage);
+                    mSongTitle.setText(song.getmSongName());
+                    mSongInfo.setText(song.getmArtistName() + "|" + song.getmAblumName());
+                    currentRef = song;
+                }
+                if (info.isPlaying || info.isPrepared) {
+                    if (!info.isPrepared) {
+                        if (!observer.isRunning()) {
+                            new Thread(observer).start();
+                        }
+                        mSeekBar.setMax((int) PlayerController.getDuration());
+                    } else {
+                        observer.stop();
+                        mSeekBar.setMax(Integer.MAX_VALUE);
+                        mSeekBar.setProgress(0);
+                    }
+                    mTogglePlay.setImageResource(R.mipmap.ic_pause_white_48dp);
+                } else {
+                    mSeekBar.setMax((int) PlayerController.getDuration());
+                    mSeekBar.setProgress((int)PlayerController.getCurrentPosition());
+                    mTogglePlay.setImageResource(R.mipmap.ic_play_arrow_white_48dp);
+                }
             }
-            mReflectedImage.setImageBitmap(reflectedImage);
-            mSongTitle.setText(info.song.getmSongName());
-            mSongInfo.setText(info.song.getmArtistName() + "|" + info.song.getmAblumName());
-            if (!(info.isPlaying || info.isPrepared)) {
-                mTogglePlay.setImageResource(R.mipmap.ic_play_arrow_white_48dp);
-                isPlaying = false;
-            } else {
-                mTogglePlay.setImageResource(R.mipmap.ic_pause_white_48dp);
-                isPlaying = true;
+        }
+    }
+
+    class SeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
+        boolean touchingProgressBar = false;
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            if (b && !touchingProgressBar) {
+                onStartTrackingTouch(seekBar);
+                onStopTrackingTouch(seekBar);
             }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            observer.stop();
+            touchingProgressBar = true;
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            PlayerController.seek(mSeekBar.getProgress());
+            new Thread(observer).start();
+            touchingProgressBar = false;
+        }
+    }
+
+    class SeekObserver implements Runnable {
+        private boolean stop = false;
+        @Override
+        public void run() {
+            stop = false;
+            while (!stop) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSeekBar.setProgress((int) PlayerController.getCurrentPosition());
+                    }
+                });
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        public void stop() {
+            stop = true;
+        }
+
+        public boolean isRunning() {
+            return !stop;
         }
     }
 }

@@ -36,5 +36,11 @@
             android:process=":player"
             android:exported="false"/>
 
+        <receiver android:name=".PlayerController$Receiver"
+            android:exported="false">
+            <intent-filter android:priority="999">
+                <action android:name="me.xiaok.wavemusic.REFRESH_INFO"/>
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

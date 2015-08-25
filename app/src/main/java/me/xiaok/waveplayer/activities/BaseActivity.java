@@ -24,8 +24,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected AppBarLayout mAppBar;
     protected Toolbar mToolBar;
-    //正在播放音乐的信息
-    public static Player.Info info;
 
     public void toolBarClick() {}
 
@@ -62,7 +60,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(receiver, new IntentFilter(Player.SONG_CHANGE));
+        registerReceiver(receiver, new IntentFilter(Player.UPDATE_SONG_INFO));
     }
 
     @Override
@@ -76,13 +74,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     public BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Player.SONG_CHANGE)) {
-                info = intent.getExtras().getParcelable(Player.INFO);
-                update(intent);
-            }
-
+            update();
         }
     };
 
-    public void update(Intent intent) {}
+    public void update() {}
 }

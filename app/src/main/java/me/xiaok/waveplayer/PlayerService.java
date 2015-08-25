@@ -36,17 +36,20 @@ public class PlayerService extends Service {
      * 常量
      */
     private static final int NOTIFICATION_ID = 1;
+    public static final String ACTION_BEGIN = "me.xiaok.waveplayer.ACTION_BEGIN";
     public static final String ACTION_TOGGLE_PLAY = "me.xiaok.waveplayer.ACTION_TOGGLE_PLAY";
     public static final String ACTION_PLAY = "me.xiaok.waveplayer.ACTION_PLAY";
     public static final String ACTION_NEXT = "me.xiaok.waveplayer.ACTION_NEXT";
     public static final String ACTION_PREVIOUS = "me.xiaok.waveplayer.ACTION_PREVIOUS";
     public static final String ACTION_PAUSE = "me.xiaok.waveplayer.ACTION_PAUSE";
     public static final String ACTION_STOP = "me.xiaok.waveplayer.ACTION_STOP";
+    public static final String ACTION_SEEK = "me.xiaok.waveplayer.ACTION_SEEK";
     public static final String ACTION_SET_QUEUE = "me.xiaok.waveplayer.SET_QUEUE";
-    public static final String ACTION_ADD_QUEUE = "me.xiaok.waveplayer.ADD_QUEUE";
     public static final String ACTION_DELETE_SONG = "me.xiaok.waveplayer.DELETE_SONG";
-    public static final String ACTION_PLAY_ALL = "me.xiaok.waveplayer.PLAY_ALL";
-    public static final String ACTION_PLAY_SONG = "me.xiaok.waveplayer.PLAY_SONG";
+
+    public static final String EXTRA_QUEUE = "extra_queue";
+    public static final String EXTRA_POSITION = "extra_position";
+    public static final String EXTRA_SEEK_POSITION = "extra_seek_position";
 
     /**
      * 全局变量
@@ -258,17 +261,13 @@ public class PlayerService extends Service {
             }
 
             switch (intent.getAction()) {
-                case ACTION_PLAY_ALL:
-                    Bundle bundle = intent.getExtras();
-                    ArrayList<Song> songs = bundle.getParcelableArrayList(ACTION_PLAY_ALL);
-                    instance.player.playAll(songs);
+                case ACTION_BEGIN:
                     instance.player.begin();
                     break;
-                case ACTION_PLAY_SONG:
-                    Bundle songBundle = intent.getExtras();
-                    Song song = songBundle.getParcelable(ACTION_PLAY_SONG);
-                    instance.player.playSong(song);
-                    instance.player.begin();
+                case ACTION_SET_QUEUE:
+                    int position = intent.getIntExtra(EXTRA_POSITION, 0);
+                    ArrayList<Song> songList = intent.getParcelableArrayListExtra(EXTRA_QUEUE);
+                    instance.player.setQueue(songList, position);
                     break;
                 case ACTION_TOGGLE_PLAY:
                     instance.player.togglePlay();
@@ -288,11 +287,14 @@ public class PlayerService extends Service {
                 case ACTION_STOP:
                     instance.stop();
                     break;
-                case ACTION_ADD_QUEUE:
-                    Bundle addBundle = intent.getExtras();
-                    ArrayList<Song> songList = addBundle.getParcelableArrayList(PlayerService.ACTION_ADD_QUEUE);
-                    instance.player.addQueue(songList);
+                case ACTION_SEEK:
+                    instance.player.setSeek(intent.getIntExtra(EXTRA_SEEK_POSITION, 0));
                     break;
+//                case ACTION_ADD_QUEUE:
+//                    Bundle addBundle = intent.getExtras();
+//                    ArrayList<Song> songList = addBundle.getParcelableArrayList(PlayerService.ACTION_ADD_QUEUE);
+//                    instance.player.addQueue(songList);
+//                    break;
                 case ACTION_DELETE_SONG:
                     break;
             }
