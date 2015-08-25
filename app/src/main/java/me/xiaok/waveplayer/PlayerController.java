@@ -22,9 +22,9 @@ import me.xiaok.waveplayer.utils.LogUtils;
 public class PlayerController {
     public static final String TAG = "PlayerController";
 
-    public static Context application;
-    public static Player.Info info;
-    public static Bitmap art;
+    private static Context application;
+    private static Player.Info info;
+    private static Bitmap art;
 
     /**
      * 启动播放器服务
@@ -64,7 +64,6 @@ public class PlayerController {
             info.currentPosition = getCurrentPosition();
             info.currentTime = System.currentTimeMillis();
             info.isPlaying = !info.isPlaying;
-            info.isPause = !info.isPause;
         }
         application.sendBroadcast(getBaseIntent(PlayerService.ACTION_TOGGLE_PLAY));
     }
@@ -85,13 +84,8 @@ public class PlayerController {
         if (info != null) {
             info.queuePosition = 0;
             info.currentTime = System.currentTimeMillis();
-            info.isPlaying = true;
         }
         application.sendBroadcast(getBaseIntent(PlayerService.ACTION_BEGIN));
-    }
-
-    public static void play() {
-        application.sendBroadcast(getBaseIntent(PlayerService.ACTION_PLAY));
     }
 
     public static void next() {
@@ -156,9 +150,6 @@ public class PlayerController {
         return info != null && info.isPlaying;
     }
 
-    public static boolean isPause() {
-        return info != null && info.isPause;
-    }
 
     public static Song getNowPlaying() {
         if (info != null && info.queuePosition < info.queue.size()) {

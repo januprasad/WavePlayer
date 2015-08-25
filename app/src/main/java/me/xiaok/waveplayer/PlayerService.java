@@ -149,7 +149,7 @@ public class PlayerService extends Service {
         }
 
         //更新TogglePlay button
-        if (!(player.isPlaying() || player.isPreparing())) {
+        if (!player.isPlaying()) {
             notificationView.setImageViewResource(R.id.notification_toggle_play, R.mipmap.ic_play_arrow_white_48dp);
             notificationViewExpanded.setImageViewResource(R.id.notification_toggle_play, R.mipmap.ic_play_arrow_white_48dp);
         } else {
@@ -161,9 +161,9 @@ public class PlayerService extends Service {
         Notification.Builder builder = new Notification.Builder(this)
                 .setOngoing(true)
                 .setSmallIcon(
-                        (player.isPlaying() || player.isPreparing())
-                                ? R.mipmap.ic_play_arrow_white_24dp
-                                : R.mipmap.ic_pause_white_24dp
+                        (player.isPlaying())
+                                ? R.mipmap.ic_pause_white_24dp
+                                : R.mipmap.ic_play_arrow_white_24dp
                 )
                 .setOnlyAlertOnce(true)
                 .setPriority(Notification.PRIORITY_LOW)
@@ -220,7 +220,7 @@ public class PlayerService extends Service {
         notification.addAction(R.mipmap.ic_skip_previous_white_48dp, "action_previous", PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_PREVIOUS), 0));
         // 添加Play/Pause切换按钮
         // Also set the notification's icon to reflect the player's status
-        if (player.isPlaying() || player.isPreparing()) {
+        if (player.isPlaying()) {
             notification
                     .addAction(R.mipmap.ic_pause_white_48dp, "action_pause", PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0))
                     .setSmallIcon(R.mipmap.ic_play_arrow_white_24dp);
@@ -290,11 +290,6 @@ public class PlayerService extends Service {
                 case ACTION_SEEK:
                     instance.player.setSeek(intent.getIntExtra(EXTRA_SEEK_POSITION, 0));
                     break;
-//                case ACTION_ADD_QUEUE:
-//                    Bundle addBundle = intent.getExtras();
-//                    ArrayList<Song> songList = addBundle.getParcelableArrayList(PlayerService.ACTION_ADD_QUEUE);
-//                    instance.player.addQueue(songList);
-//                    break;
                 case ACTION_DELETE_SONG:
                     break;
             }

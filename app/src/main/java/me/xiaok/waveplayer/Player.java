@@ -16,19 +16,16 @@ import java.util.ArrayList;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.FetchUtils;
 import me.xiaok.waveplayer.utils.LogUtils;
-import me.xiaok.waveplayer.utils.MediaPlayerManaged;
 
 /**
  * Created by GeeKaven on 15/8/19.
  */
-public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener{
+public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
     private static final String TAG = "Player";
     //播放切换时发送播放歌曲的状态
     public static final String UPDATE_SONG_INFO = "me.xiaok.wavemusic.REFRESH_INFO";
     public static final String EXTRA_NAME = "extra_name";
-    public static final String EXTRA_QUEUE_LIST = "queue_list";
-    public static final String EXTRA_QUEUE_LIST_POSITION = "queue_list_position";
 
     //播放列表
     private ArrayList<Song> queue;
@@ -37,16 +34,17 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
     private Bitmap art;
 
     //播放器
-    private MediaPlayerManaged mediaPlayer;
+    private MediaPlayer mediaPlayer;
 
     /**
      * Player构造函数， 进行MediaPlayer初始化
+     *
      * @param context
      */
     public Player(Context context) {
         this.context = context;
 
-        mediaPlayer = new MediaPlayerManaged();
+        mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
 
@@ -113,7 +111,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
      * 上一首
      */
     public void previous() {
-        if (queuePosition - 1 < 0){
+        if (queuePosition - 1 < 0) {
             queuePosition = queue.size() - 1;
         } else {
             queuePosition--;
@@ -130,6 +128,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
     /**
      * 设置播放队列以及起始位置
+     *
      * @param list
      * @param positon
      */
@@ -147,6 +146,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
     /**
      * 将一组歌添加到播放队列
+     *
      * @param list
      */
     public void addQueue(ArrayList<Song> list) {
@@ -155,16 +155,18 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
     /**
      * 准备完成
-     * @param mediaPlayer
+     *
+     * @param mp
      */
     @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
+    public void onPrepared(MediaPlayer mp) {
         mediaPlayer.start();
         updateNowPlaying();
     }
 
     /**
      * 播放完成
+     *
      * @param mediaPlayer
      */
     @Override
@@ -203,8 +205,6 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
      */
     public static class Info implements Parcelable {
         public boolean isPlaying;
-        public boolean isPause;
-        public boolean isPrepared;
         //存储当前系统时间
         public long currentTime;
         // 存储歌曲总时间
@@ -217,8 +217,6 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
         public Info(Player player) {
             isPlaying = player.isPlaying();
-            isPause = player.isPasue();
-            isPrepared = player.isPrepared();
             currentTime = System.currentTimeMillis();
             duration = player.getDuration();
             currentPosition = player.getCurrentPosition();
@@ -227,11 +225,9 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
         }
 
         public Info(Parcel parcel) {
-            boolean[] booleans = new boolean[3];
+            boolean[] booleans = new boolean[1];
             parcel.readBooleanArray(booleans);
             isPlaying = booleans[0];
-            isPause = booleans[1];
-            isPrepared = booleans[2];
             currentTime = parcel.readLong();
             duration = parcel.readLong();
             currentPosition = parcel.readLong();
@@ -258,7 +254,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
         @Override
         public void writeToParcel(Parcel parcel, int flag) {
-            parcel.writeBooleanArray(new boolean[]{isPlaying, isPause, isPrepared});
+            parcel.writeBooleanArray(new boolean[]{isPlaying});
             parcel.writeLong(currentTime);
             parcel.writeLong(duration);
             parcel.writeLong(currentPosition);
@@ -269,30 +265,16 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
     /**
      * 判断是否正在播放
+     *
      * @return
      */
     public boolean isPlaying() {
-        return mediaPlayer.getState() == MediaPlayerManaged.status.STARTED;
-    }
-
-    /**
-     * 判断时否暂停
-     * @return
-     */
-    public boolean isPasue() {
-        return mediaPlayer.getState() == MediaPlayerManaged.status.PAUSED;
-    }
-
-    public boolean isPrepared() {
-        return mediaPlayer.getState() == MediaPlayerManaged.status.PREPARED;
-    }
-
-    public boolean isPreparing() {
-        return mediaPlayer.getState() == MediaPlayerManaged.status.PREPARING;
+        return mediaPlayer.isPlaying();
     }
 
     /**
      * 获得当前正在播放的歌曲
+     *
      * @return
      */
     public Song getNowPlaying() {
@@ -305,6 +287,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
     /**
      * 获得目前正在播放的时间
+     *
      * @return
      */
     public int getCurrentPosition() {
@@ -313,6 +296,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
     /**
      * 获得当前播放队列位置
+     *
      * @return
      */
     public int getQueuePosition() {
@@ -321,6 +305,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
     /**
      * 获取当前播放队列
+     *
      * @return
      */
     public ArrayList<Song> getQueue() {
@@ -329,6 +314,7 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
     /**
      * 获取当前播放歌曲总时间
+     *
      * @return
      */
     public long getDuration() {

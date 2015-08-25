@@ -163,7 +163,12 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         if (info != null) {
             Song song = PlayerController.getNowPlaying();
             if (song != null) {
+                //当切换歌曲时，因为有单曲循环状态
                 if (currentRef != song) {
+                    //当begin()的时候，此时的isPlaying为false
+                    //歌曲处于正在播放时，并且seekbar没有启动，那么就启动它
+                    //因为这里时第一次启动seekbar
+                    LogUtils.v(TAG, info.isPlaying + "");
                     if (info.isPlaying && !observer.isRunning()) {
                         new Thread(observer).start();
                     }
@@ -179,21 +184,16 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
                     mSongInfo.setText(song.getmArtistName() + "|" + song.getmAblumName());
                     currentRef = song;
                 }
-                if (info.isPlaying || info.isPrepared) {
-                    if (!info.isPrepared) {
-                        if (!observer.isRunning()) {
-                            new Thread(observer).start();
-                        }
-                        mSeekBar.setMax((int) PlayerController.getDuration());
-                    } else {
-                        observer.stop();
-                        mSeekBar.setMax(Integer.MAX_VALUE);
-                        mSeekBar.setProgress(0);
-                    }
+
+                if (info.isPlaying) {
+                    //正在播放时将togglebutton设置为暂停图片
                     mTogglePlay.setImageResource(R.mipmap.ic_pause_white_48dp);
                 } else {
+                    //在begin()的时候此时歌曲没有播放，为正在准备中，
+                    //在此时将seekbar的最大值设置为歌曲的总长度, 进度设置为当前进度，由于准备中，当前进度为0
+                    //
                     mSeekBar.setMax((int) PlayerController.getDuration());
-                    mSeekBar.setProgress((int)PlayerController.getCurrentPosition());
+                    mSeekBar.setProgress((int) PlayerController.getCurrentPosition());
                     mTogglePlay.setImageResource(R.mipmap.ic_play_arrow_white_48dp);
                 }
             }
@@ -224,6 +224,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         }
     }
 
+    //
     class SeekObserver implements Runnable {
         private boolean stop = false;
         @Override
