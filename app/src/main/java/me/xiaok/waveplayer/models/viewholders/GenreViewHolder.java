@@ -44,10 +44,10 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
         this.itemView = itemView;
 
         mRoot = (FrameLayout) itemView.findViewById(R.id.root);
-        mGenreImg = (SimpleDraweeView) itemView.findViewById(R.id.genre_img);
+        mGenreImg = (SimpleDraweeView) itemView.findViewById(R.id.back_img);
         mClickMore = (ImageView) itemView.findViewById(R.id.click_more);
-        mGenreName = (TextView) itemView.findViewById(R.id.genre_name);
-        mGenreInfo = (TextView) itemView.findViewById(R.id.genre_info);
+        mGenreName = (TextView) itemView.findViewById(R.id.item_title);
+        mGenreInfo = (TextView) itemView.findViewById(R.id.item_text);
         mGenreImg.setAspectRatio(1.0f);
 
         mRoot.setOnClickListener(this);

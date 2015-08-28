@@ -17,6 +17,7 @@ import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.fragments.AlbumsFragment;
 import me.xiaok.waveplayer.fragments.ArtistsFragment;
 import me.xiaok.waveplayer.fragments.GenreFragment;
+import me.xiaok.waveplayer.fragments.PlayListFragment;
 import me.xiaok.waveplayer.fragments.SongsFragment;
 import me.xiaok.waveplayer.utils.Navigate;
 
@@ -105,6 +106,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         private Fragment mArtistsFragment;
         private Fragment mAlbumsFragment;
         private Fragment mGenresFragment;
+        private Fragment mPlayListsFragment;
 
         public CustomPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -115,7 +117,10 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             switch (position) {
                 case 0:
                     //播放列表
-                    break;
+                    if (mPlayListsFragment == null) {
+                        mPlayListsFragment = new PlayListFragment();
+                    }
+                    return mPlayListsFragment;
                 case 1:
                     //歌曲
                     if (mSongsFragment == null) {

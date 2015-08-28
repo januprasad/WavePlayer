@@ -68,7 +68,7 @@ public class ArtistDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         .inflate(R.layout.item_head, parent, false));
             case ALBUM_VIEW:
                 return new AlbumViewHolder(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_album, parent, false));
+                        .inflate(R.layout.item_grid, parent, false));
             case SONG_VIEW:
                 SongViewHolder holder = new SongViewHolder(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_song, parent, false));

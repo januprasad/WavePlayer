@@ -61,7 +61,7 @@ public class ArtistActivity extends BaseActivity implements View.OnClickListener
 
     @Override
     protected int getLayoutResource() {
-        return R.layout.activity_detail_artist;
+        return R.layout.activity_detail;
     }
 
     @Override

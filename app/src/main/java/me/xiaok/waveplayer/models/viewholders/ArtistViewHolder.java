@@ -40,10 +40,10 @@ public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.On
         super(itemView);
         this.itemView = itemView;
         mRoot = (FrameLayout) itemView.findViewById(R.id.root);
-        mArtistImg = (SimpleDraweeView) itemView.findViewById(R.id.artist_img);
+        mArtistImg = (SimpleDraweeView) itemView.findViewById(R.id.back_img);
         mClickMore = (ImageView) itemView.findViewById(R.id.click_more);
-        mArtistName = (TextView) itemView.findViewById(R.id.artist_name);
-        mAlbumNum = (TextView) itemView.findViewById(R.id.album_num);
+        mArtistName = (TextView) itemView.findViewById(R.id.item_title);
+        mAlbumNum = (TextView) itemView.findViewById(R.id.item_text);
         mArtistImg.setAspectRatio(1.0f);
 
         mRoot.setOnClickListener(this);

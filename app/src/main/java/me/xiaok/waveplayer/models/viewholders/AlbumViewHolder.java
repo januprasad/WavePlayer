@@ -74,10 +74,10 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
         defaultSubTitleColor = itemView.getResources().getColor(R.color.grid_default_subtitle);
 
         mRoot = (FrameLayout) itemView.findViewById(R.id.root);
-        mAlbumImg = (SimpleDraweeView) itemView.findViewById(R.id.album_img);
+        mAlbumImg = (SimpleDraweeView) itemView.findViewById(R.id.back_img);
         mClickMore = (ImageView) itemView.findViewById(R.id.click_more);
-        mAlbumName = (TextView) itemView.findViewById(R.id.album_name);
-        mArtistName = (TextView) itemView.findViewById(R.id.album_artist);
+        mAlbumName = (TextView) itemView.findViewById(R.id.item_title);
+        mArtistName = (TextView) itemView.findViewById(R.id.item_text);
         mAlbumImg.setAspectRatio(1.0f);
 
         mRoot.setOnClickListener(this);

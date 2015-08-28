@@ -38,7 +38,7 @@ public class GenreActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     protected int getLayoutResource() {
-        return R.layout.activity_detail_genre;
+        return R.layout.activity_detail;
     }
 
     @Override

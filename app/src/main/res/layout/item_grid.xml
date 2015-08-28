@@ -5,27 +5,28 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="@dimen/grid_margin"
     android:background="@color/grid_default_background"
-    android:foreground="?selectableItemBackground"
-    android:layout_margin="@dimen/grid_margin">
+    android:foreground="?selectableItemBackground">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/album_img"
+            android:id="@+id/back_img"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             fresco:actualImageScaleType="centerCrop"
             fresco:backgroundImage="@mipmap/default_artwork"
+            fresco:fadeDuration="300"
             fresco:failureImage="@mipmap/default_artwork"
-            fresco:failureImageScaleType="centerCrop"
-            fresco:fadeDuration="300" />
+            fresco:failureImageScaleType="centerCrop" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="68dp"
-            android:layout_below="@+id/album_img">
+            android:layout_below="@+id/back_img">
 
             <ImageView
                 android:id="@+id/click_more"
@@ -48,7 +49,7 @@
                 android:padding="@dimen/grid_padding">
 
                 <TextView
-                    android:id="@+id/album_name"
+                    android:id="@+id/item_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -57,7 +58,7 @@
                     android:textSize="@dimen/grid_text_title_size" />
 
                 <TextView
-                    android:id="@+id/album_artist"
+                    android:id="@+id/item_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/no_artist"

@@ -65,12 +65,24 @@ public class LibManager {
     };
 
     public static final String[] playListProjection = new String[]{
-
+            MediaStore.Audio.Playlists._ID,
+            MediaStore.Audio.Playlists.NAME
     };
 
     public static final String[] genreProjection = new String[]{
             MediaStore.Audio.Genres._ID,
             MediaStore.Audio.Genres.NAME
+    };
+
+    public static final String[] playListSongProjection = new String[] {
+            MediaStore.Audio.Playlists.Members.TITLE,
+            MediaStore.Audio.Playlists.Members.AUDIO_ID,
+            MediaStore.Audio.Playlists.Members.ARTIST,
+            MediaStore.Audio.Playlists.Members.ALBUM,
+            MediaStore.Audio.Playlists.Members.DURATION,
+            MediaStore.Audio.Playlists.Members.DATA,
+            MediaStore.Audio.Playlists.Members.ALBUM_ID,
+            MediaStore.Audio.Playlists.Members.ARTIST_ID
     };
 
     /**
@@ -83,6 +95,7 @@ public class LibManager {
         setSongLib(scanSongs(context));
         setArtistLib(scanArtists(context));
         setAlbumLib(scanAlbums(context));
+        setPlayListLib(scanPlayList(context));
         setGenreLib(scanGenres(context));
     }
 
@@ -200,7 +213,26 @@ public class LibManager {
      * @return
      */
     public static ArrayList<PlayList> scanPlayList(Context context) {
-        return null;
+        ArrayList<PlayList> playLists = new ArrayList<>();
+        Cursor cursor = context.getContentResolver().query(
+                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+                playListProjection,
+                null,
+                null,
+                MediaStore.Audio.Playlists.NAME + " ASC"
+        );
+
+        for (int i = 0; i < cursor.getCount(); i++) {
+            cursor.moveToPosition(i);
+            PlayList playList = new PlayList(
+                    cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)),
+                    cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME))
+            );
+            playLists.add(playList);
+        }
+
+        cursor.close();
+        return playLists;
     }
 
     /**
@@ -256,7 +288,8 @@ public class LibManager {
     public static boolean isEmpty() {
         boolean flag = false;
 
-        if (mSongLib.isEmpty() && mArtistLib.isEmpty() && mAlbumLib.isEmpty() && mGenreLib.isEmpty()) {
+        if (mSongLib.isEmpty() && mArtistLib.isEmpty() && mAlbumLib.isEmpty()
+                && mPlayListLib.isEmpty() && mGenreLib.isEmpty()) {
             flag = true;
         }
 
@@ -291,6 +324,16 @@ public class LibManager {
     public static void setAlbumLib(ArrayList<Album> albumList) {
         mAlbumLib.clear();
         mAlbumLib.addAll(albumList);
+    }
+
+    /**
+     * 设置清单列表
+     *
+     * @param playList
+     */
+    public static void setPlayListLib(ArrayList<PlayList> playList) {
+        mPlayListLib.clear();
+        mPlayListLib.addAll(playList);
     }
 
     /**
@@ -331,6 +374,15 @@ public class LibManager {
     }
 
     /**
+     * 获得播放清单
+     *
+     * @return
+     */
+    public static ArrayList<PlayList> getPlayLists() {
+        return mPlayListLib;
+    }
+
+    /**
      * 获取类型列表
      *
      * @return
@@ -346,6 +398,8 @@ public class LibManager {
         mSongLib.clear();
         mArtistLib.clear();
         mAlbumLib.clear();
+        mGenreLib.clear();
+        mPlayListLib.clear();
     }
 
     /**
@@ -411,6 +465,42 @@ public class LibManager {
                 songs.add(s);
             }
         }
+        return songs;
+    }
+
+    /**
+     * 获得播放清单里的所有歌曲
+     *
+     * @param playList
+     * @return
+     */
+    public static ArrayList<Song> getPlayListSongs(Context context, PlayList playList) {
+        ArrayList<Song> songs = new ArrayList<>();
+
+        Cursor cursor = context.getContentResolver().query(
+                MediaStore.Audio.Playlists.Members.getContentUri("external", playList.getmPlayListId()),
+                playListSongProjection,
+                MediaStore.Audio.Media.IS_MUSIC + " != 0",
+                null,
+                null
+        );
+
+        for (int i = 0; i < cursor.getCount(); i++) {
+            cursor.moveToPosition(i);
+            Song song = new Song(
+                    cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID)),
+                    cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members.TITLE)),
+                    cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members.ARTIST)),
+                    cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM)),
+                    cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members.DURATION)),
+                    cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members.DATA)),
+                    cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM_ID)),
+                    cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members.ARTIST_ID))
+            );
+            songs.add(song);
+        }
+
+        cursor.close();
         return songs;
     }
 
