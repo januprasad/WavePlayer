@@ -1,8 +1,9 @@
 package me.xiaok.waveplayer.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -12,26 +13,32 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import de.umass.lastfm.ImageSize;
 import me.xiaok.waveplayer.LibManager;
-import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.adapters.ArtistDetailAdapter;
 import me.xiaok.waveplayer.models.Album;
 import me.xiaok.waveplayer.models.Artist;
+import me.xiaok.waveplayer.models.FmArtist;
 import me.xiaok.waveplayer.models.Song;
-import me.xiaok.waveplayer.utils.FetchUtils;
+import me.xiaok.waveplayer.request.GsonRequest;
+import me.xiaok.waveplayer.utils.LogUtils;
 import me.xiaok.waveplayer.utils.Navigate;
 
 /**
  * 歌手详情Activity
- *
+ * <p/>
  * 显示歌手信息，本地专辑，所有歌曲
- *
+ * <p/>
  * Created by GeeKaven on 15/8/16.
  */
 public class ArtistActivity extends BaseActivity implements View.OnClickListener {
@@ -47,7 +54,10 @@ public class ArtistActivity extends BaseActivity implements View.OnClickListener
 
     private ArrayList<Song> mSongList;
     private ArrayList<Album> mAlbumList;
-    private de.umass.lastfm.Artist artist;
+
+    private static final String API_KEY = "692515bb0a1d5a21a327cf0901674370";
+    private static final String url = "http://ws.audioscrobbler.com/2.0/";
+    private static final String parmar = "?method=artist.getInfo&lang=zh&artist=";
 
     @Override
     protected int getLayoutResource() {
@@ -118,15 +128,44 @@ public class ArtistActivity extends BaseActivity implements View.OnClickListener
         mList.setAdapter(mAdapter);
 
         mFabPlay.setOnClickListener(this);
-        loadBackDrop();
+        try {
+            loadBackDrop();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * 加载专辑图片
      */
-    private void loadBackDrop() {
+    private void loadBackDrop() throws UnsupportedEncodingException {
         final SimpleDraweeView backDrop = (SimpleDraweeView) findViewById(R.id.backdrop);
-        backDrop.setImageURI(Uri.parse("res:///" + R.mipmap.text_img));
+        if (mArtist.getmArtistName().equalsIgnoreCase(this.getString(R.string.no_artist)))
+            return;
+
+        String artistName = URLEncoder.encode(mArtist.getmArtistName(), "UTF-8");
+        LogUtils.v(TAG, artistName);
+        String urlFormat = String.format("%s?method=%s&lang=%s&artist=%s&format=json&api_key=%s"
+                ,url,"artist.getInfo", "zh", artistName,API_KEY);
+        ConnectivityManager network = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (network.getActiveNetworkInfo() != null &&
+                network.getActiveNetworkInfo().isAvailable() && !network.getActiveNetworkInfo().isRoaming()) {
+            RequestQueue queue = Volley.newRequestQueue(this);
+            GsonRequest<FmArtist> request = new GsonRequest<>(urlFormat, FmArtist.class,
+                    new Response.Listener<FmArtist>() {
+                        @Override
+                        public void onResponse(FmArtist response) {
+                            backDrop.setImageURI(Uri.parse(response.getArtist().getImage().get(4).getImageUrl()));
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
+                    });
+            queue.add(request);
+        }
 
     }
 

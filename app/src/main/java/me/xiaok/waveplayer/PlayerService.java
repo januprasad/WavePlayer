@@ -298,7 +298,6 @@ public class PlayerService extends Service {
 
     @Override
     public void onDestroy() {
-        finish();
         super.onDestroy();
     }
 

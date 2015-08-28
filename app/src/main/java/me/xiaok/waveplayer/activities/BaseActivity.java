@@ -15,7 +15,9 @@ import android.view.WindowManager;
 
 import me.xiaok.waveplayer.LibManager;
 import me.xiaok.waveplayer.Player;
+import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
+import me.xiaok.waveplayer.WaveApplication;
 
 /**
  * Created by GeeKaven on 15/8/16.

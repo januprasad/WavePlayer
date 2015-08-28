@@ -163,13 +163,13 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         if (info != null) {
             Song song = PlayerController.getNowPlaying();
             if (song != null) {
-                //当切换歌曲时，因为有单曲循环状态
+                //
                 if (currentRef != song) {
                     //当begin()的时候，此时的isPlaying为false
                     //歌曲处于正在播放时，并且seekbar没有启动，那么就启动它
                     //因为这里时第一次启动seekbar
                     LogUtils.v(TAG, info.isPlaying + "");
-                    if (info.isPlaying && !observer.isRunning()) {
+                    if (!info.isPlaying && !observer.isRunning()) {
                         new Thread(observer).start();
                     }
                     Bitmap reflectedImage;
@@ -191,7 +191,6 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
                 } else {
                     //在begin()的时候此时歌曲没有播放，为正在准备中，
                     //在此时将seekbar的最大值设置为歌曲的总长度, 进度设置为当前进度，由于准备中，当前进度为0
-                    //
                     mSeekBar.setMax((int) PlayerController.getDuration());
                     mSeekBar.setProgress((int) PlayerController.getCurrentPosition());
                     mTogglePlay.setImageResource(R.mipmap.ic_play_arrow_white_48dp);
@@ -246,6 +245,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         }
 
         public void stop() {
+            LogUtils.v(TAG, "runnable stop ");
             stop = true;
         }
 

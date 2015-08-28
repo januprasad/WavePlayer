@@ -63,6 +63,7 @@ public class PlayerController {
         if (info != null) {
             info.currentPosition = getCurrentPosition();
             info.currentTime = System.currentTimeMillis();
+            LogUtils.v(TAG, info.currentPosition + "  -  " + info.currentTime);
             info.isPlaying = !info.isPlaying;
         }
         application.sendBroadcast(getBaseIntent(PlayerService.ACTION_TOGGLE_PLAY));

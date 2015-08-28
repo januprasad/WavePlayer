@@ -92,7 +92,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
             case R.id.nav_quit:
                 PlayerController.stop();
-                finish();
+                System.exit(0);
                 break;
         }
         mDrawerLayout.closeDrawers();

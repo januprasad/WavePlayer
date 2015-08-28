@@ -98,6 +98,15 @@ public class Song implements Parcelable {
     };
 
     @Override
+    public boolean equals(Object o) {
+        if (o instanceof Song) {
+            Song song = (Song) o;
+            return this.getmSongId() == song.getmSongId();
+        }
+        return false;
+    }
+
+    @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(mSongId);
         parcel.writeString(mSongName);
