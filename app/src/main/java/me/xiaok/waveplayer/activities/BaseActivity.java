@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -18,6 +19,7 @@ import me.xiaok.waveplayer.Player;
 import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.WaveApplication;
+import me.xiaok.waveplayer.utils.Navigate;
 
 /**
  * Created by GeeKaven on 15/8/16.
@@ -69,6 +71,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(receiver);
+    }
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        Navigate.back(this);
     }
 
     abstract protected int getLayoutResource();

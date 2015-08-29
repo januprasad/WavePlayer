@@ -45,6 +45,15 @@ public class PlayList implements Parcelable{
         parcel.writeString(mPlayListName);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof PlayList) {
+            PlayList playList = (PlayList)o;
+            return this.mPlayListId == playList.getmPlayListId();
+        }
+        return super.equals(o);
+    }
+
     public int getmPlayListId() {
         return mPlayListId;
     }

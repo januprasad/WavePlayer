@@ -104,6 +104,12 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         new Thread(observer).start();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     /**
      * 初始化View
      */
@@ -163,8 +169,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         if (info != null) {
             Song song = PlayerController.getNowPlaying();
             if (song != null) {
-                //
-                if (currentRef != song) {
+                if (!song.equals(currentRef)) {
                     //当begin()的时候，此时的isPlaying为false
                     //歌曲处于正在播放时，并且seekbar没有启动，那么就启动它
                     //因为这里时第一次启动seekbar
@@ -181,7 +186,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
                     }
                     mReflectedImage.setImageBitmap(reflectedImage);
                     mSongTitle.setText(song.getmSongName());
-                    mSongInfo.setText(song.getmArtistName() + "|" + song.getmAblumName());
+                    mSongInfo.setText(song.getmArtistName() + " | " + song.getmAblumName());
                     currentRef = song;
                 }
 

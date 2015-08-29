@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".WaveApplication"
@@ -21,11 +22,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.AlbumActivity"/>
-        <activity android:name=".activities.ArtistActivity"/>
-        <activity android:name=".activities.NowPlayingMusic"/>
-        <activity android:name=".activities.GenreActivity"/>
-        <activity android:name=".activities.PlayListActivity"/>
+        <!-- Detial Activity -->
+        <activity android:name=".activities.AlbumActivity"
+            android:windowSoftInputMode="adjustPan|adjustNothing"/>
+        <activity android:name=".activities.ArtistActivity"
+            android:windowSoftInputMode="adjustPan|adjustNothing"/>
+        <activity android:name=".activities.GenreActivity"
+            android:windowSoftInputMode="adjustPan|adjustNothing"/>
+        <activity android:name=".activities.PlayListActivity"
+            android:windowSoftInputMode="adjustPan|adjustNothing"/>
+
+        <!-- NowPlayingMusic Activty -->
+        <activity android:name=".activities.NowPlayingMusic"
+            android:screenOrientation="fullUser" />
 
         <!-- Player Service -->
         <service android:name=".PlayerService"

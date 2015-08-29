@@ -99,6 +99,9 @@ public class Song implements Parcelable {
 
     @Override
     public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
         if (o instanceof Song) {
             Song song = (Song) o;
             return this.getmSongId() == song.getmSongId();

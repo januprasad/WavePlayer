@@ -17,18 +17,22 @@ import me.xiaok.waveplayer.LibManager;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.adapters.SongAdapter;
 import me.xiaok.waveplayer.models.Song;
+import me.xiaok.waveplayer.utils.LogUtils;
 
 /**
  * Created by GeeKaven on 15/8/16.
  */
 public class SongsFragment extends Fragment {
 
+    private static final String TAG = "SongsFragment";
     private RecyclerView mList;
     private SongAdapter mAdapter;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        LogUtils.v(TAG, "SongsFragment onCreateView is called");
+
         View view = inflater.inflate(R.layout.com_list, container, false);
         mList = (RecyclerView)view.findViewById(R.id.list);
 

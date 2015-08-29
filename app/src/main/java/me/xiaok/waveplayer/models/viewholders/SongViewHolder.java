@@ -1,8 +1,10 @@
 package me.xiaok.waveplayer.models.viewholders;
 
-import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -11,17 +13,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import me.xiaok.waveplayer.LibManager;
-import me.xiaok.waveplayer.Player;
 import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.activities.NowPlayingMusic;
+import me.xiaok.waveplayer.models.PlayList;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.LogUtils;
 import me.xiaok.waveplayer.utils.MusicUtils;
@@ -33,6 +35,8 @@ import me.xiaok.waveplayer.utils.Navigate;
 public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
 
     private static final String TAG = "SongViewHolder";
+
+    private View itemView;
     private RelativeLayout mRoot;
     private SimpleDraweeView mSongImage;
     private TextView mSongTitle;
@@ -40,12 +44,16 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     private TextView mSongDuration;
     private ImageView mClickMore;
 
+    private Context context;
     private Song ref;
     private int position;
     private ArrayList<Song> mSongList;
 
     public SongViewHolder(View itemView) {
         super(itemView);
+        this.itemView = itemView;
+        context = itemView.getContext();
+
         mRoot = (RelativeLayout) itemView.findViewById(R.id.root);
         mSongImage = (SimpleDraweeView)itemView.findViewById(R.id.song_image);
         mSongTitle = (TextView) itemView.findViewById(R.id.song_title);
@@ -113,17 +121,53 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 //                ArrayList<Song> songs = new ArrayList<>();
 //                songs.add(ref);
 //                PlayerController.addQueue(songs);
-                break;
+                return true;
             case R.id.add_playlist:
                 //添加到播放列表
-                break;
+                final ArrayList<PlayList> playLists = LibManager.getPlayLists();
+                String[] names = new String[playLists.size()];
+                for (int i = 0; i < playLists.size(); i++) {
+                    names[i] = playLists.get(i).getmPlayListName();
+                }
+
+                AlertDialog dialog = new AlertDialog.Builder(context)
+                        .setTitle(context.getString(R.string.add_to_playlist_title))
+                        .setItems(names, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, final int i) {
+                                new AsyncTask<Void, Void, Void>() {
+                                    @Override
+                                    protected Void doInBackground(Void... voids) {
+                                        LibManager.addSongToPlaylist(
+                                                context,
+                                                playLists.get(i),
+                                                ref
+                                        );
+                                        return null;
+                                    }
+
+                                    @Override
+                                    protected void onPostExecute(Void aVoid) {
+                                        Toast.makeText(context, context.getString(R.string.message_add_to_playlist), Toast.LENGTH_SHORT).show();
+                                    }
+                                }.execute();
+                            }
+                        })
+                        .setNegativeButton(context.getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        })
+                        .show();
+                return true;
             case R.id.set_ring:
                 //设置为铃声
-                break;
+                return true;
             case R.id.delete:
                 //删除
-                break;
+                return true;
         }
-        return true;
+        return false;
     }
 }

@@ -2,6 +2,9 @@ package me.xiaok.waveplayer.models.viewholders;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,6 +17,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
@@ -27,10 +31,14 @@ import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
+import java.util.ArrayList;
+
+import me.xiaok.waveplayer.LibManager;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.WaveApplication;
 import me.xiaok.waveplayer.activities.AlbumActivity;
 import me.xiaok.waveplayer.models.Album;
+import me.xiaok.waveplayer.models.PlayList;
 import me.xiaok.waveplayer.utils.LogUtils;
 import me.xiaok.waveplayer.utils.Navigate;
 
@@ -63,11 +71,13 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private TextView mAlbumName;
     private TextView mArtistName;
     private Album ref;
+    private Context context;
 
     public AlbumViewHolder(View itemView) {
         super(itemView);
 
         this.itemView = itemView;
+        context = itemView.getContext();
 
         defaultBackgroundColor = itemView.getResources().getColor(R.color.grid_default_background);
         defaultTitleColor = itemView.getResources().getColor(R.color.grid_default_title);
@@ -243,11 +253,47 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.play_all:
-                break;
+                return true;
             case R.id.add_queue:
-                break;
+                return true;
             case R.id.add_playlist:
-                break;
+                final ArrayList<PlayList> playLists = LibManager.getPlayLists();
+                String[] names = new String[playLists.size()];
+                for (int i = 0; i < playLists.size(); i++) {
+                    names[i] = playLists.get(i).getmPlayListName();
+                }
+
+                AlertDialog dialog = new AlertDialog.Builder(context)
+                        .setTitle(context.getString(R.string.add_to_playlist_title))
+                        .setItems(names, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, final int i) {
+                                new AsyncTask<Void, Void, Void>() {
+                                    @Override
+                                    protected Void doInBackground(Void... voids) {
+                                        LibManager.addSongListToPlaylist(
+                                                context,
+                                                playLists.get(i),
+                                                LibManager.getAlbumSongs(ref)
+                                        );
+                                        return null;
+                                    }
+
+                                    @Override
+                                    protected void onPostExecute(Void aVoid) {
+                                        Toast.makeText(context, context.getString(R.string.message_add_to_playlist),Toast.LENGTH_SHORT).show();
+                                    }
+                                }.execute();
+                            }
+                        })
+                        .setNegativeButton(context.getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        })
+                        .show();
+                return true;
         }
         return true;
     }

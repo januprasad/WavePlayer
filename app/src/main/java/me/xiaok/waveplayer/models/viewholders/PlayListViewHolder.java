@@ -1,12 +1,18 @@
 package me.xiaok.waveplayer.models.viewholders;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -18,11 +24,12 @@ import me.xiaok.waveplayer.activities.PlayListActivity;
 import me.xiaok.waveplayer.models.PlayList;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.FetchUtils;
+import me.xiaok.waveplayer.utils.LogUtils;
 
 /**
  * Created by GeeKaven on 15/8/28.
  */
-public class PlayListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class PlayListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
     public static final String TAG = "PlayListViewHolder";
 
     private View itemView;
@@ -32,12 +39,16 @@ public class PlayListViewHolder extends RecyclerView.ViewHolder implements View.
     private TextView mPlayListName;
     private TextView mPlayListInfo;
     private PlayList ref;
+    private Context context;
     //在本类型下的所有歌曲
     private ArrayList<Song> mSongList;
+
+    private PlayListRemoveListener listener;
 
     public PlayListViewHolder(View itemView) {
         super(itemView);
         this.itemView = itemView;
+        context = itemView.getContext();
 
         mRoot = (FrameLayout) itemView.findViewById(R.id.root);
         mPlayListImg = (SimpleDraweeView) itemView.findViewById(R.id.back_img);
@@ -77,7 +88,47 @@ public class PlayListViewHolder extends RecyclerView.ViewHolder implements View.
                 itemView.getContext().startActivity(intent);
                 break;
             case R.id.click_more:
+                LogUtils.v(TAG, "more click");
+                PopupMenu popupMenu = new PopupMenu(itemView.getContext(), mClickMore, Gravity.END);
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu_playlist, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(this);
+                popupMenu.show();
                 break;
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.delete:
+                if (listener != null) {
+                    new AsyncTask<Void, Void, PlayList>() {
+                        @Override
+                        protected PlayList doInBackground(Void... voids) {
+                            return LibManager.deletePlaylist(context, ref);
+                        }
+
+                        @Override
+                        protected void onPostExecute(PlayList playList) {
+                            if (playList != null) {
+                                listener.playListRemoved(playList);
+                                Toast.makeText(context,
+                                        String.format(context.getString(R.string.message_removed_playlist), playList.getmPlayListName())
+                                        ,Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }.execute();
+                }
+                return true;
+        }
+        return false;
+    }
+
+    public void setPlayListRemoveListener(PlayListRemoveListener listener) {
+        this.listener = listener;
+    }
+
+    public interface PlayListRemoveListener {
+        void playListRemoved(PlayList playList);
     }
 }

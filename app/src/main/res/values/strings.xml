@@ -21,6 +21,18 @@
     <string name="popup_menu_delete">删除</string>
     <string name="popup_menu_play_all">全部播放</string>
 
+    <!-- dialog 提示字段 -->
+    <string name="input_empty">输入不能为空</string>
+    <string name="input_exist">歌单已经存在</string>
+    <string name="message_created_playlist">歌单「 %s 」创建成功</string>
+    <string name="message_removed_playlist">歌单「 %s 」删除成功</string>
+    <string name="message_add_to_playlist">添加到歌单成功</string>
+    <string name="add_to_playlist_title">给歌单添加歌曲</string>
+    <string name="action_undo">撤销</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_create">创建</string>
+    <string name="action_ok">确定</string>
+
     <string name="no_artist">UnKnow</string>
     <string name="no_album">0 album</string>
     <string name="album">Album</string>

@@ -1,8 +1,16 @@
 package me.xiaok.waveplayer;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -29,6 +37,9 @@ public class LibManager {
     public static final ArrayList<PlayList> mPlayListLib = new ArrayList<>();
     public static final ArrayList<Genre> mGenreLib = new ArrayList<>();
 
+    public interface PlayListRemoveListener {
+        void playListRemoved(PlayList playList);
+    }
     /**
      * 歌曲查询
      */
@@ -533,5 +544,157 @@ public class LibManager {
             }
         }
         return null;
+    }
+
+    public static PlayList createPlaylist(final View view, final String playlistName){
+        final Context context = view.getContext();
+        String trimmedName = playlistName.trim();
+
+        setPlayListLib(scanPlayList(context));
+
+        String error = checkPlaylistName(context, trimmedName);
+        if (error != null){
+            return null;
+        }
+
+        final PlayList created = makePlaylist(context, trimmedName);
+
+        return created;
+    }
+
+    /**
+     * 创建歌单
+     * @param context
+     * @param playlistName
+     * @return
+     */
+    private static PlayList makePlaylist(final Context context, final String playlistName){
+        String trimmedName = playlistName.trim();
+
+        // 添加歌单到MediaStore
+        ContentValues mInserts = new ContentValues();
+        mInserts.put(MediaStore.Audio.Playlists.NAME, trimmedName);
+        mInserts.put(MediaStore.Audio.Playlists.DATE_ADDED, System.currentTimeMillis());
+        mInserts.put(MediaStore.Audio.Playlists.DATE_MODIFIED, System.currentTimeMillis());
+
+        Uri newPlaylistUri = context.getContentResolver().insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, mInserts);
+
+        // 更新存储的歌单
+        setPlayListLib(scanPlayList(context));
+
+        // 获取新歌单ID
+        Cursor cursor = context.getContentResolver().query(
+                newPlaylistUri,
+                new String[]{MediaStore.Audio.Playlists._ID},
+                null, null, null);
+
+        cursor.moveToFirst();
+        final PlayList playlist = new PlayList(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)), playlistName);
+        cursor.close();
+
+        return playlist;
+    }
+
+    /**
+     * 删除歌单
+     * @param context
+     * @param playlist
+     */
+    public static PlayList deletePlaylist(final Context context, final PlayList playlist){
+        //从MediaStore移除歌单
+        context.getContentResolver().delete(
+                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+                MediaStore.Audio.Playlists._ID + "=?",
+                new String[]{playlist.getmPlayListId() + ""});
+
+        //更新歌单
+        mPlayListLib.clear();
+        setPlayListLib(scanPlayList(context));
+
+        return playlist;
+    }
+
+    /**
+     * 向歌单添加音乐
+     * @param context
+     * @param playlist
+     * @param song
+     */
+    public static void addSongToPlaylist (final Context context, final PlayList playlist, final Song song){
+        // Private method to add a song to a playlist
+        // This method does the actual operation to the MediaStore
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.getmPlayListId()),
+                null, null, null,
+                MediaStore.Audio.Playlists.Members.TRACK + " ASC");
+
+        long count = 0;
+        if (cur.moveToLast()) count = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.TRACK));
+        cur.close();
+
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, count + 1);
+        values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, song.getmSongId());
+
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.getmPlayListId());
+        ContentResolver resolver = context.getContentResolver();
+        resolver.insert(uri, values);
+        resolver.notifyChange(Uri.parse("content://media"), null);
+    }
+
+    /**
+     * 批量向歌单添加音乐
+     * @param context
+     * @param playlist
+     * @param songs
+     */
+    public static void addSongListToPlaylist(final Context context, final PlayList playlist, final ArrayList<Song> songs){
+        // Private method to add a song to a playlist
+        // This method does the actual operation to the MediaStore
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.getmPlayListId()),
+                null, null, null,
+                MediaStore.Audio.Playlists.Members.TRACK + " ASC");
+
+        long count = 0;
+        if (cur.moveToLast()) count = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.TRACK));
+        cur.close();
+
+        ContentValues[] values = new ContentValues[songs.size()];
+        for (int i = 0; i < songs.size(); i++) {
+            values[i] = new ContentValues();
+            values[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, count + 1);
+            values[i].put(MediaStore.Audio.Playlists.Members.AUDIO_ID, songs.get(i).getmSongId());
+        }
+
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.getmPlayListId());
+        ContentResolver resolver = context.getContentResolver();
+        resolver.bulkInsert(uri, values);
+        resolver.notifyChange(Uri.parse("content://media"), null);
+    }
+
+    /**
+     * 检查输入歌单名称， 为空，或已经存在
+     * @param context
+     * @param trimmedName
+     * @return
+     */
+    public static String checkPlaylistName(Context context, String trimmedName) {
+        String error = null;
+        if (trimmedName.length() == 0) {
+            error = context.getResources().getString(R.string.input_empty);
+        }
+
+        if (trimmedName.trim().length() == 0) {
+            error = context.getResources().getString(R.string.input_empty);
+        }
+
+        for (PlayList playList : mPlayListLib) {
+            if (playList.getmPlayListName().equals(trimmedName)) {
+                error = context.getResources().getString(R.string.input_exist);
+            }
+        }
+
+        return error;
     }
 }
