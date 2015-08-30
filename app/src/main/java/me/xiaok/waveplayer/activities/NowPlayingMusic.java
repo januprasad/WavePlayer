@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
@@ -35,6 +36,7 @@ import me.xiaok.waveplayer.models.viewholders.AlbumViewHolder;
 import me.xiaok.waveplayer.utils.FetchUtils;
 import me.xiaok.waveplayer.utils.LogUtils;
 import me.xiaok.waveplayer.utils.MusicUtils;
+import me.xiaok.waveplayer.utils.PreferencesUtils;
 
 /**
  * 正在播放音乐界面
@@ -59,6 +61,9 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
 
     private SeekObserver observer = null;
     private Song currentRef = null;
+
+    private int iconIndex;
+
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_now_playing;
@@ -74,12 +79,38 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         setupInstance();
 
         observer = new SeekObserver();
+
+        iconIndex = PreferencesUtils.getInt(this, Player.PREFERENCES_STATE, Player.REPEAT_NONE);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_now_playing_music, menu);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.getItem(0);
+        switch (iconIndex) {
+            case 0:
+                item.setIcon(R.mipmap.ic_queue_music_white_48dp);
+                toastShow(getResources().getString(R.string.message_repeat_none));
+                break;
+            case 1:
+                item.setIcon(R.mipmap.ic_repeat_white_48dp);
+                toastShow(getResources().getString(R.string.message_repeat_all));
+                break;
+            case 2:
+                item.setIcon(R.mipmap.ic_repeat_one_white_48dp);
+                toastShow(getResources().getString(R.string.message_repeat_one));
+                break;
+            case 3:
+                item.setIcon(R.mipmap.ic_shuffle_white_48dp);
+                toastShow(getResources().getString(R.string.message_shuffle));
+                break;
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -87,6 +118,11 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                return true;
+            case R.id.action_play_controller:
+                iconIndex = (iconIndex + 1) % 4;
+                invalidateOptionsMenu();
+                PlayerController.togglePlayState(iconIndex);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -206,6 +242,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
 
     class SeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
         boolean touchingProgressBar = false;
+
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
             if (b && !touchingProgressBar) {
@@ -231,6 +268,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
     //
     class SeekObserver implements Runnable {
         private boolean stop = false;
+
         @Override
         public void run() {
             stop = false;
@@ -257,5 +295,9 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
         public boolean isRunning() {
             return !stop;
         }
+    }
+
+    private void toastShow(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 }

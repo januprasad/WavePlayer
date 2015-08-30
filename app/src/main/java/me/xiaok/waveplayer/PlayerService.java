@@ -46,10 +46,12 @@ public class PlayerService extends Service {
     public static final String ACTION_SEEK = "me.xiaok.waveplayer.ACTION_SEEK";
     public static final String ACTION_SET_QUEUE = "me.xiaok.waveplayer.SET_QUEUE";
     public static final String ACTION_DELETE_SONG = "me.xiaok.waveplayer.DELETE_SONG";
+    public static final String ACTION_SET_PRES = "me.xiaok.waveplayer.SET_PRES";
 
     public static final String EXTRA_QUEUE = "extra_queue";
     public static final String EXTRA_POSITION = "extra_position";
     public static final String EXTRA_SEEK_POSITION = "extra_seek_position";
+    public static final String EXTRA_STATE = "extra_state";
 
     /**
      * 全局变量
@@ -291,6 +293,9 @@ public class PlayerService extends Service {
                     instance.player.setSeek(intent.getIntExtra(EXTRA_SEEK_POSITION, 0));
                     break;
                 case ACTION_DELETE_SONG:
+                    break;
+                case ACTION_SET_PRES:
+                    instance.getPlayer().setPreferences(intent.getIntExtra(EXTRA_STATE, Player.REPEAT_ALL));
                     break;
             }
         }

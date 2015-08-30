@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.FetchUtils;
 import me.xiaok.waveplayer.utils.LogUtils;
+import me.xiaok.waveplayer.utils.PreferencesUtils;
 
 /**
  * 播放器控制类，用于控制Service中的播放器
@@ -127,6 +128,15 @@ public class PlayerController {
         application.sendBroadcast(intent);
     }
 
+    public static void togglePlayState(int state) {
+
+        PreferencesUtils.putInt(application, Player.PREFERENCES_STATE, state);
+
+        Intent intent = getBaseIntent(PlayerService.ACTION_SET_PRES);
+        intent.putExtra(PlayerService.EXTRA_STATE, state);
+        application.sendBroadcast(intent);
+    }
+
     public static Player.Info getInfo() {
         return info;
     }
@@ -149,7 +159,6 @@ public class PlayerController {
     public static boolean isPlaying() {
         return info != null && info.isPlaying;
     }
-
 
     public static Song getNowPlaying() {
         if (info != null && info.queuePosition < info.queue.size()) {

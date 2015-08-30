@@ -69,7 +69,6 @@ public class PlayListFragment extends Fragment implements View.OnClickListener {
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.END | Gravity.BOTTOM;
 
-
         int navigationBarHeight = 0;
         Resources resources = this.getResources();
         int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
@@ -77,8 +76,9 @@ public class PlayListFragment extends Fragment implements View.OnClickListener {
             navigationBarHeight = resources.getDimensionPixelSize(resourceId); //获取高度
         }
 
-        layoutParams.setMargins(0, 0, 10, navigationBarHeight + 20);
+        layoutParams.setMargins(0, 0, 20, navigationBarHeight + 30);
         fab.setLayoutParams(layoutParams);
+        fab.setImageResource(R.mipmap.ic_playlist_add_white_48dp);
         fab.setOnClickListener(this);
 
         mRoot.addView(fab);
