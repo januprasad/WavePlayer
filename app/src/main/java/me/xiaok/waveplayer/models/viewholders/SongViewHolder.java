@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.common.media.MediaUtils;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
@@ -163,6 +164,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 return true;
             case R.id.set_ring:
                 //设置为铃声
+                MusicUtils.setRingTone(context, ref);
                 return true;
             case R.id.delete:
                 //删除

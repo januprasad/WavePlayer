@@ -621,8 +621,6 @@ public class LibManager {
      * @param song
      */
     public static void addSongToPlaylist (final Context context, final PlayList playlist, final Song song){
-        // Private method to add a song to a playlist
-        // This method does the actual operation to the MediaStore
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.getmPlayListId()),
                 null, null, null,
@@ -649,8 +647,6 @@ public class LibManager {
      * @param songs
      */
     public static void addSongListToPlaylist(final Context context, final PlayList playlist, final ArrayList<Song> songs){
-        // Private method to add a song to a playlist
-        // This method does the actual operation to the MediaStore
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.getmPlayListId()),
                 null, null, null,

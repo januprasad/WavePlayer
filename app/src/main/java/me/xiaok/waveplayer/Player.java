@@ -415,7 +415,10 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
      * @return
      */
     public long getDuration() {
-        return getNowPlaying().getmDuration();
+        if (getNowPlaying() != null) {
+            return getNowPlaying().getmDuration();
+        }
+        return 0;
     }
 
     public Bitmap getArt() {
