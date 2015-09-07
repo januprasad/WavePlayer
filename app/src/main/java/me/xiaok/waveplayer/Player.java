@@ -1,21 +1,33 @@
 package me.xiaok.waveplayer;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.RemoteControlClient;
+import android.media.session.PlaybackState;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.PowerManager;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.MediaSessionCompatApi19;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import java.io.IOException;
+import java.lang.ref.PhantomReference;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
+import me.xiaok.waveplayer.activities.NowPlayingMusic;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.FetchUtils;
 import me.xiaok.waveplayer.utils.LogUtils;
@@ -31,6 +43,10 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
     public static final String UPDATE_SONG_INFO = "me.xiaok.wavemusic.REFRESH_INFO";
     public static final String EXTRA_NAME = "extra_name";
     public static final String PREFERENCES_STATE = "state";
+
+    private Listener listener;
+    private MediaSessionCompat mediaSession;
+
 
     //播放列表
     private ArrayList<Song> queue;
@@ -69,6 +85,97 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
         queuePosition = 0;
 
         state = PreferencesUtils.getInt(context, PREFERENCES_STATE, REPEAT_NONE);
+
+        initMediaSession();
+
+        listener = new Listener(this);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_MEDIA_BUTTON);
+        filter.addAction(Intent.ACTION_HEADSET_PLUG);
+        context.registerReceiver(listener, filter);
+    }
+
+    /**
+     * 初始化MediaSession，MediaSession用于System用音乐进行交流
+     */
+    private void initMediaSession() {
+        mediaSession = new MediaSessionCompat(context,TAG,null,null);
+        mediaSession.setCallback(new MediaSessionCompat.Callback() {
+            @Override
+            public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
+                LogUtils.i(TAG, "media button event :  " + mediaButtonEvent.getAction());
+                return super.onMediaButtonEvent(mediaButtonEvent);
+            }
+
+            @Override
+            public void onPlay() {
+                play();
+            }
+
+            @Override
+            public void onPause() {
+                pause();
+            }
+
+            @Override
+            public void onStop() {
+                stop();
+            }
+
+            @Override
+            public void onSeekTo(long pos) {
+                setSeek((int) pos);
+            }
+
+            @Override
+            public void onSkipToNext() {
+                next();
+            }
+
+            @Override
+            public void onSkipToQueueItem(long id) {
+                super.onSkipToQueueItem(id);
+            }
+        });
+
+        mediaSession.setSessionActivity(PendingIntent.getActivity(context, 0, new Intent(context, NowPlayingMusic.class)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP), PendingIntent.FLAG_CANCEL_CURRENT));
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+
+        PlaybackStateCompat.Builder state = new PlaybackStateCompat.Builder().setActions(
+                PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_PLAY_PAUSE
+                | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+        ).setState(PlaybackStateCompat.STATE_NONE, 0, 0f);
+        mediaSession.setPlaybackState(state.build());
+        mediaSession.setActive(true);
+    }
+
+    /**
+     * 更新MediaSession，设置正在播放歌曲的信息
+     */
+    private void updateMediaSession() {
+        if (getNowPlaying() != null) {
+            MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
+            metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, getNowPlaying().getmSongName())
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, getNowPlaying().getmSongName())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, getNowPlaying().getmAblumName())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, getNowPlaying().getmArtistName())
+                    .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, getArt());
+            mediaSession.setMetadata(metadataBuilder.build());
+
+            PlaybackStateCompat.Builder state = new PlaybackStateCompat.Builder().setActions(
+                    PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_PLAY_PAUSE
+                            | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+            );
+
+            if (isPlaying()) {
+                state.setState(PlaybackStateCompat.STATE_PLAYING, getQueuePosition(), 1f);
+            } else {
+                state.setState(PlaybackStateCompat.STATE_PAUSED, getQueuePosition(), 1f);
+            }
+
+            mediaSession.setPlaybackState(state.build());
+        }
     }
 
     /**
@@ -157,6 +264,13 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
         mediaPlayer.pause();
     }
 
+    public void stop() {
+        if (isPlaying()) {
+            mediaPlayer.stop();
+        }
+
+    }
+
     /**
      * 设置播放队列以及起始位置
      *
@@ -217,6 +331,9 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
      * 结束时清除资源
      */
     public void finish() {
+
+        context.unregisterReceiver(listener);
+
         mediaPlayer.stop();
         mediaPlayer.release();
         mediaPlayer = null;
@@ -280,6 +397,8 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
         bundle.putParcelable(EXTRA_NAME, new Info(this));
         intent.putExtras(bundle);
         context.sendOrderedBroadcast(intent, null);
+
+        updateMediaSession();
     }
 
     /**
@@ -423,5 +542,26 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
     public Bitmap getArt() {
         return art;
+    }
+
+    /**
+     * 主要用于监听系统media按键，耳机插拔
+     */
+    public static class Listener extends BroadcastReceiver {
+
+        Player instence;
+
+        public Listener(Player instence) {
+            this.instence = instence;
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            LogUtils.i(TAG, intent.getAction());
+            if (Intent.ACTION_HEADSET_PLUG.equals(intent.getAction()) && instence.isPlaying()
+                    && intent.getIntExtra("state", -1) == 0) {
+                instence.pause();
+            }
+        }
     }
 }

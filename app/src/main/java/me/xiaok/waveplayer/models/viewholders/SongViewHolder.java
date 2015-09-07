@@ -99,13 +99,11 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.root:
-                LogUtils.v(TAG, ref.getmSongName() + "  " + mSongList.size());
                 PlayerController.setQueueAndPosition(mSongList, position);
                 PlayerController.begin();
                 Navigate.to(itemView.getContext(), NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, ref);
                 break;
             case R.id.click_more:
-                LogUtils.v(TAG, "more click");
                 PopupMenu popupMenu = new PopupMenu(itemView.getContext(), mClickMore, Gravity.END);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu_song, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(this);

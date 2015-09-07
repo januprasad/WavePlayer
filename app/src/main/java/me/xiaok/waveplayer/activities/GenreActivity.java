@@ -15,7 +15,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import java.util.ArrayList;
 
 import me.xiaok.waveplayer.LibManager;
-import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.adapters.SongAdapter;
 import me.xiaok.waveplayer.models.Genre;
@@ -55,7 +54,7 @@ public class GenreActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 

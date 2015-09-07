@@ -3,6 +3,7 @@ package me.xiaok.waveplayer;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -37,9 +38,6 @@ public class LibManager {
     public static final ArrayList<PlayList> mPlayListLib = new ArrayList<>();
     public static final ArrayList<Genre> mGenreLib = new ArrayList<>();
 
-    public interface PlayListRemoveListener {
-        void playListRemoved(PlayList playList);
-    }
     /**
      * 歌曲查询
      */
@@ -676,21 +674,30 @@ public class LibManager {
      * @return
      */
     public static String checkPlaylistName(Context context, String trimmedName) {
-        String error = null;
+
         if (trimmedName.length() == 0) {
-            error = context.getResources().getString(R.string.input_empty);
+            return context.getResources().getString(R.string.input_empty);
         }
 
         if (trimmedName.trim().length() == 0) {
-            error = context.getResources().getString(R.string.input_empty);
+            return context.getResources().getString(R.string.input_empty);
         }
 
         for (PlayList playList : mPlayListLib) {
             if (playList.getmPlayListName().equals(trimmedName)) {
-                error = context.getResources().getString(R.string.input_exist);
+                return context.getResources().getString(R.string.input_exist);
             }
         }
 
-        return error;
+        return null;
+    }
+
+    /**
+     * 音乐添加，删除后，数据库中的音乐信息并没有更新，原来的音乐还会显示在那里
+     * 那么就需要重新扫描音乐文件，更新数据库，然后在刷新信息
+     * @param context
+     */
+    public static void scanMusic(Context context) {
+        Intent intent = new Intent();
     }
 }

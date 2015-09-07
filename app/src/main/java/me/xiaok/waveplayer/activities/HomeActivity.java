@@ -1,6 +1,15 @@
 package me.xiaok.waveplayer.activities;
 
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.storage.StorageManager;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -9,9 +18,15 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+
+import me.xiaok.waveplayer.LibManager;
 import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.fragments.AlbumsFragment;
@@ -19,7 +34,7 @@ import me.xiaok.waveplayer.fragments.ArtistsFragment;
 import me.xiaok.waveplayer.fragments.GenreFragment;
 import me.xiaok.waveplayer.fragments.PlayListFragment;
 import me.xiaok.waveplayer.fragments.SongsFragment;
-import me.xiaok.waveplayer.utils.Navigate;
+import me.xiaok.waveplayer.utils.LogUtils;
 
 /**
  * 主activity
@@ -28,9 +43,12 @@ import me.xiaok.waveplayer.utils.Navigate;
  */
 public class HomeActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "HomeActivity";
+
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
-    private CustomPagerAdapter mAdapter;
+    public ViewPager pager;
+    public CustomPagerAdapter mAdapter;
     @Override
     protected int getLayoutResource() {
         return R.layout.activity_home;
@@ -51,7 +69,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
@@ -61,8 +79,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
-            case R.id.action_settings:
+            case R.id.action_scan:
 //                Navigate.to(this, NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, info.song);
+                refreshLibrary();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -73,7 +92,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mNavigationView = (NavigationView)findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
 
-        ViewPager pager = (ViewPager) findViewById(R.id.view_pager);
+        pager = (ViewPager) findViewById(R.id.view_pager);
         mAdapter = new CustomPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(mAdapter);
 
@@ -169,6 +188,106 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
                     return getResources().getString(R.string.tab_genres);
                 default:
                     return "tab: " + position;
+            }
+        }
+
+        public void clear() {
+            mSongsFragment = null;
+            mArtistsFragment = null;
+            mAlbumsFragment = null;
+            mGenresFragment = null;
+            mPlayListsFragment = null;
+        }
+    }
+
+    public void refreshLibrary() {
+
+        String[] paths;
+        File[] files;
+        StorageManager sm = (StorageManager) getSystemService(Context.STORAGE_SERVICE);
+        // 获取sdcard的路径：外置和内置
+        try {
+            paths = (String[]) sm.getClass().getMethod("getVolumePaths", null).invoke(sm, null);
+            files = new File[paths.length];
+            for (int i = 0; i < paths.length; i++) {
+                files[i] = new File(paths[i]);
+            }
+            if (Environment.getExternalStorageState().equals(
+                    Environment.MEDIA_MOUNTED)) {
+                new ScanTask(this).execute(files);
+            }else{
+                Toast.makeText(this, "没有SD卡", Toast.LENGTH_LONG).show();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    class ScanTask extends AsyncTask<File, String, Integer> {
+
+        private Context context;
+        private ProgressDialog dialog;
+        private int count = 0;
+
+        public ScanTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(context);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setMessage("正在扫描....");
+            dialog.show();
+        }
+
+        @Override
+        protected Integer doInBackground(File... files) {
+            for (File f : files) {
+                getAllFiles(f, new String[] {".mp3"});
+            }
+            return count;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            dialog.setMessage(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            dialog.cancel();
+            Toast.makeText(context, "音乐: " + integer, Toast.LENGTH_SHORT).show();
+        }
+
+        private void getAllFiles(File file, String[] ext) {
+            if (file != null) {
+                if (file.isDirectory()) {
+                    File[] listFile = file.listFiles();
+                    if (listFile != null) {
+                        for (File f : listFile) {
+                            getAllFiles(f, ext);
+                        }
+                    }
+                } else {
+                    String filename = file.getAbsolutePath();
+                    publishProgress(String.format("...%s",filename.substring(filename.length() - 20)));
+                    for (String s : ext) {
+                        if (filename.endsWith(s)) {
+                            MediaScannerConnection.scanFile(context,
+                                    new String[]{ filename }, null,
+                                    new MediaScannerConnection.OnScanCompletedListener() {
+                                        public void onScanCompleted(String path, Uri uri) {
+                                            Log.i("ExternalStorage", "Scanned " + path + ":");
+                                            Log.i("ExternalStorage", "-> uri=" + uri);
+                                        }
+                                    });
+                            count++;
+                            break;
+                        }
+                    }
+                }
             }
         }
     }

@@ -106,10 +106,11 @@ public class MusicUtils {
                 null
         );
 
+        //媒体库中存在，就更新。 在这里是一定存在的，并没有直接在文件中选择
         if (cursor.moveToFirst() && cursor.getCount() > 0) {
             String _id = cursor.getString(0);
 
-            //更新铃声ku
+            //更新铃声库
             cv.put(MediaStore.Audio.Media.IS_RINGTONE, true);
 
             context.getContentResolver().update(
@@ -127,5 +128,9 @@ public class MusicUtils {
 //            Ringtone rt = RingtoneManager.getRingtone(context, newUri);
 //            rt.play();
         }
+    }
+
+    public static void deleteMusic(Song song) {
+
     }
 }

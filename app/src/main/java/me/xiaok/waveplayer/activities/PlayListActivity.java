@@ -12,13 +12,10 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-import me.xiaok.waveplayer.LibManager;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.adapters.SongAdapter;
-import me.xiaok.waveplayer.models.Genre;
 import me.xiaok.waveplayer.models.PlayList;
 import me.xiaok.waveplayer.models.Song;
-import me.xiaok.waveplayer.utils.LogUtils;
 
 /**
  * Created by GeeKaven on 15/8/28.
@@ -54,7 +51,7 @@ public class PlayListActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 

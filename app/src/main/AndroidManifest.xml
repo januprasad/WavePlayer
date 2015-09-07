@@ -53,5 +53,6 @@
                 <action android:name="me.xiaok.wavemusic.REFRESH_INFO"/>
             </intent-filter>
         </receiver>
+
     </application>
 </manifest>
