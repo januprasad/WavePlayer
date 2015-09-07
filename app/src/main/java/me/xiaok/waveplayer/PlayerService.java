@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v7.app.NotificationCompat;
 import android.widget.RemoteViews;
 
 import java.util.ArrayList;
@@ -86,124 +87,32 @@ public class PlayerService extends Service {
             player = new Player(this);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            startForeground(NOTIFICATION_ID, getNotification());
-        } else {
-            startForeground(NOTIFICATION_ID, getNotificationCompat());
-        }
+        startForeground(NOTIFICATION_ID, getNotification());
     }
 
     /**
      * 更新Notification
      */
     public void notifyNowPlaying() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            notificationManager.notify(NOTIFICATION_ID, getNotification());
-        } else {
-            notificationManager.notify(NOTIFICATION_ID, getNotificationCompat());
-        }
-    }
-
-    /**
-     * android 4.4下的Notification
-     */
-    @TargetApi(18)
-    private Notification getNotificationCompat() {
-
-        Intent intent = new Intent(this, Listener.class);
-
-        RemoteViews notificationView = new RemoteViews(getPackageName(), R.layout.notification);
-        RemoteViews notificationViewExpanded = new RemoteViews(getPackageName(), R.layout.notification_expanded);
-
-        if (getArt() == null) {
-            notificationView.setImageViewResource(R.id.notification_icon, R.mipmap.text_img);
-            notificationViewExpanded.setImageViewResource(R.id.notification_icon, R.mipmap.text_img);
-        } else {
-            notificationView.setImageViewResource(R.id.notification_icon, R.mipmap.text_img);
-            notificationViewExpanded.setImageViewResource(R.id.notification_icon, R.mipmap.text_img);
-        }
-
-        if (getNowPlaying() != null) {
-            //更新notificationView内容
-            notificationView.setTextViewText(R.id.notification_title, getNowPlaying().getmSongName());
-            notificationView.setTextViewText(R.id.notification_subtitle, getNowPlaying().getmArtistName());
-            //更新notificationViewExpanded内容
-            notificationViewExpanded.setTextViewText(R.id.notification_title, getNowPlaying().getmSongName());
-            notificationViewExpanded.setTextViewText(R.id.notification_subtitle, getNowPlaying().getmArtistName());
-            notificationViewExpanded.setTextViewText(R.id.notification_text, getNowPlaying().getmAblumName());
-
-            notificationView.setOnClickPendingIntent(R.id.notification_toggle_play, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0));
-            notificationView.setOnClickPendingIntent(R.id.notification_next, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_NEXT), 0));
-            notificationView.setOnClickPendingIntent(R.id.notification_previous, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_PREVIOUS), 0));
-
-            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_toggle_play, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0));
-            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_next, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_NEXT), 0));
-            notificationViewExpanded.setOnClickPendingIntent(R.id.notification_previous, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_PREVIOUS), 0));
-
-        } else {
-            //更新notificationView内容
-            notificationView.setTextViewText(R.id.notification_title, "Nothing is playing");
-            notificationView.setTextViewText(R.id.notification_subtitle, "");
-            //更新notificationViewExpanded内容
-            notificationViewExpanded.setTextViewText(R.id.notification_title, "Nothing is playing");
-            notificationViewExpanded.setTextViewText(R.id.notification_subtitle, "");
-            notificationViewExpanded.setTextViewText(R.id.notification_text, "");
-        }
-
-        //更新TogglePlay button
-        if (!player.isPlaying()) {
-            notificationView.setImageViewResource(R.id.notification_toggle_play, R.mipmap.ic_play_arrow_white_48dp);
-            notificationViewExpanded.setImageViewResource(R.id.notification_toggle_play, R.mipmap.ic_play_arrow_white_48dp);
-        } else {
-            notificationView.setImageViewResource(R.id.notification_toggle_play, R.mipmap.ic_pause_white_48dp);
-            notificationViewExpanded.setImageViewResource(R.id.notification_toggle_play, R.mipmap.ic_pause_white_48dp);
-        }
-
-        // Build the notification
-        Notification.Builder builder = new Notification.Builder(this)
-                .setOngoing(true)
-                .setSmallIcon(
-                        (player.isPlaying())
-                                ? R.mipmap.ic_pause_white_24dp
-                                : R.mipmap.ic_play_arrow_white_24dp
-                )
-                .setOnlyAlertOnce(true)
-                .setPriority(Notification.PRIORITY_LOW)
-                .setContentIntent(PendingIntent.getActivity(
-                        this,
-                        0,
-                        new Intent(context, HomeActivity.class),
-                        PendingIntent.FLAG_UPDATE_CURRENT))
-                .setContent(notificationView);
-
-        Notification notification;
-        notification = builder.build();
-
-        // Manually set the expanded and compact views
-        notification.contentView = notificationView;
-        notification.bigContentView = notificationViewExpanded;
-
-
-        return notification;
+        notificationManager.notify(NOTIFICATION_ID, getNotification());
     }
 
     /**
      * android 5.0下的Notification
      */
-    @TargetApi(21)
     private Notification getNotification() {
-        Notification.Builder notification = new Notification.Builder(context);
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context);
 
         Intent intent = new Intent(getInstance(), Listener.class);
 
         notification
-                .setStyle(new Notification.MediaStyle().setShowActionsInCompactView(0, 1, 2))
+                .setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(0, 1, 2))
                 .setColor(context.getResources().getColor(R.color.grid_default_background))
                 .setShowWhen(false)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
-                .setPriority(Notification.PRIORITY_LOW)
-                .setVisibility(Notification.VISIBILITY_PUBLIC)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentIntent(PendingIntent.getActivity(
                         getInstance(),
                         0,
