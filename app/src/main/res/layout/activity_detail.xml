@@ -31,7 +31,9 @@
                 android:fitsSystemWindows="true"
                 app:fadeDuration="300"
                 app:actualImageScaleType="centerCrop"
-                app:backgroundImage="@android:color/holo_blue_light"
+                app:backgroundImage="@mipmap/default_artwork"
+                app:failureImage="@mipmap/default_artwork"
+                app:failureImageScaleType="centerCrop"
                 app:layout_collapseMode="parallax"/>
 
             <android.support.v7.widget.Toolbar

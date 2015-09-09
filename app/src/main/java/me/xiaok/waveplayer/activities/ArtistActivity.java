@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import me.xiaok.waveplayer.LibManager;
+import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.adapters.ArtistDetailAdapter;
 import me.xiaok.waveplayer.models.Album;
@@ -173,7 +174,7 @@ public class ArtistActivity extends BaseActivity implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fab_play:
-//                PlayerController.playAll(mSongList);
+                PlayerController.setQueueAndPosition(mSongList, 0);
                 Navigate.to(this, NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, mSongList.get(0));
                 break;
         }

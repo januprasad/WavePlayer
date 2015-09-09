@@ -6,9 +6,15 @@
 
     <string name="action_play_controller">播放控制</string>
     <!-- Menu -->
-    <string name="nav_library">Library</string>
+    <string name="nav_playlist">歌单</string>
+    <string name="nav_music">歌曲</string>
+    <string name="nav_artist">艺术家</string>
+    <string name="nav_album">专辑</string>
+    <string name="nav_setting">设置</string>
+    <string name="nav_genres">类型</string>
     <string name="nav_quit">退出</string>
 
+    <!-- Tab -->
     <string name="tab_playlist">歌单</string>
     <string name="tab_music">歌曲</string>
     <string name="tab_artist">艺术家</string>
@@ -43,4 +49,38 @@
     <string name="no_album">0 album</string>
     <string name="album">Album</string>
     <string name="song">Song</string>
+
+
+    <string-array name="pages">
+        <item name="0">歌单</item>
+        <item name="1">歌曲</item>
+        <item name="2">艺术家</item>
+        <item name="3">专辑</item>
+        <item name="4">类型</item>
+    </string-array>
+    <string-array name="page_value">
+        <item name="0">0</item>
+        <item name="1">1</item>
+        <item name="2">2</item>
+        <item name="3">3</item>
+        <item name="4">4</item>
+    </string-array>
+
+    <string-array name="colors">
+        <item name="0">少女粉</item>
+        <item name="1">姨妈红</item>
+        <item name="2">咸蛋黄</item>
+        <item name="3">早苗绿</item>
+        <item name="4">胖次蓝</item>
+        <item name="5">基佬紫</item>
+    </string-array>
+
+    <string-array name="color_value">
+        <item name="0">0</item>
+        <item name="1">1</item>
+        <item name="2">2</item>
+        <item name="3">3</item>
+        <item name="4">4</item>
+        <item name="5">5</item>
+    </string-array>
 </resources>

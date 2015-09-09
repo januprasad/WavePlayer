@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="常规">
+        <ListPreference
+            android:title="默认页"
+            android:defaultValue="1"
+            android:dialogTitle="默认首页"
+            android:entries="@array/pages"
+            android:entryValues="@array/page_value"
+            android:key="prefDefaultFragment"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

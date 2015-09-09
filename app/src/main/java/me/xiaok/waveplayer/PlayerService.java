@@ -1,6 +1,5 @@
 package me.xiaok.waveplayer;
 
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -11,17 +10,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
-import android.widget.RemoteViews;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import me.xiaok.waveplayer.activities.HomeActivity;
+import me.xiaok.waveplayer.activities.NowPlayingMusic;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.LogUtils;
 
@@ -98,12 +96,17 @@ public class PlayerService extends Service {
     }
 
     /**
-     * android 5.0下的Notification
+     * 使用5.0的Notification管理，同时兼容5.0以前设备
      */
     private Notification getNotification() {
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context);
 
         Intent intent = new Intent(getInstance(), Listener.class);
+
+        Intent nowPlayingIntent = new Intent(context, NowPlayingMusic.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(NowPlayingMusic.EXTRA_NOW_PLAYING, getInstance().player.getNowPlaying());
+        nowPlayingIntent.putExtras(bundle);
 
         notification
                 .setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(0, 1, 2))
@@ -116,10 +119,10 @@ public class PlayerService extends Service {
                 .setContentIntent(PendingIntent.getActivity(
                         getInstance(),
                         0,
-                        new Intent(context, HomeActivity.class),
+                        nowPlayingIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT));
 
-        // Set the album artwork
+        // 这种专辑图标
         if (getArt() == null) {
             notification.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.text_img));
         } else {
@@ -130,7 +133,6 @@ public class PlayerService extends Service {
         //添加Previous按钮
         notification.addAction(R.mipmap.ic_skip_previous_white_48dp, "action_previous", PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_PREVIOUS), 0));
         // 添加Play/Pause切换按钮
-        // Also set the notification's icon to reflect the player's status
         if (player.isPlaying()) {
             notification
                     .addAction(R.mipmap.ic_pause_white_48dp, "action_pause", PendingIntent.getBroadcast(context, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0))
@@ -212,6 +214,8 @@ public class PlayerService extends Service {
 
     @Override
     public void onDestroy() {
+        LogUtils.i(TAG, "onDestroy is called");
+        finish();
         super.onDestroy();
     }
 
@@ -220,16 +224,9 @@ public class PlayerService extends Service {
      */
     public void stop() {
         LogUtils.i(TAG, "stop() called");
-        // 如果UI线程正在工作，不要结束，只移除Notification
-        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
-        for (int i = 0; i < procInfos.size(); i++) {
-            if (procInfos.get(i).processName.equals(BuildConfig.APPLICATION_ID)) {
-                player.pause();
-                stopForeground(true);
-                return;
-            }
-        }
+
+        player.pause();
+        stopForeground(true);
 
         finish();
     }
@@ -239,6 +236,7 @@ public class PlayerService extends Service {
      */
     public void finish() {
         LogUtils.i(TAG, "finish() called");
+        LogUtils.i(TAG, "is finished : " + finished);
         if (!finished) {
             notificationManager.cancel(NOTIFICATION_ID);
             player.finish();

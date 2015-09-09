@@ -8,23 +8,17 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.RemoteControlClient;
-import android.media.session.PlaybackState;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.PowerManager;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v4.media.session.MediaSessionCompatApi19;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
 import java.io.IOException;
-import java.lang.ref.PhantomReference;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 import me.xiaok.waveplayer.activities.NowPlayingMusic;
@@ -36,7 +30,7 @@ import me.xiaok.waveplayer.utils.PreferencesUtils;
 /**
  * Created by GeeKaven on 15/8/19.
  */
-public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
 
     private static final String TAG = "Player";
     //播放切换时发送播放歌曲的状态
@@ -46,6 +40,8 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
 
     private Listener listener;
     private MediaSessionCompat mediaSession;
+    private boolean focused = false;
+    private boolean shouldPlay = false;
 
 
     //播放列表
@@ -178,21 +174,60 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
         }
     }
 
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+
+        shouldPlay = isPlaying() || shouldPlay;
+
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                pause();
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS:
+                stop();
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                mediaPlayer.setVolume(0.5f, 0.5f);
+                break;
+            case AudioManager.AUDIOFOCUS_GAIN:
+                mediaPlayer.setVolume(1.0f, 1.0f);
+                if (shouldPlay)
+                    play();
+                shouldPlay = false;
+                break;
+        }
+    }
+
+    /**
+     * 请求Audio焦点
+     * @return
+     */
+    public boolean getFocus() {
+        if (!focused) {
+            AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            focused = (audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
+                    == AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
+        }
+        return focused;
+    }
+
     /**
      * 播放前准备
      */
     public void begin() {
-        mediaPlayer.stop();
-        mediaPlayer.reset();
+        if (getFocus()) {
+            mediaPlayer.stop();
+            mediaPlayer.reset();
 
-        art = FetchUtils.fetchFullArt(getNowPlaying());
+            art = FetchUtils.fetchFullArt(getNowPlaying());
 
-        try {
-            mediaPlayer.setDataSource(getNowPlaying().getmSongPath());
-            mediaPlayer.prepareAsync();
-            updateNowPlaying();
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                mediaPlayer.setDataSource(getNowPlaying().getmSongPath());
+                mediaPlayer.prepareAsync();
+                updateNowPlaying();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -205,15 +240,15 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
         } else {
             play();
         }
-        updateNowPlaying();
     }
 
     /**
      * 播放
      */
     public void play() {
-        if (!isPlaying()) {
+        if (!isPlaying() && getFocus()) {
             mediaPlayer.start();
+            updateNowPlaying();
         }
     }
 
@@ -261,13 +296,24 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
      * 暂停
      */
     public void pause() {
-        mediaPlayer.pause();
+        if (isPlaying()) {
+            mediaPlayer.pause();
+            updateNowPlaying();
+        }
+
     }
 
+    /**
+     * 停止
+     */
     public void stop() {
         if (isPlaying()) {
             mediaPlayer.stop();
         }
+
+        ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE)).abandonAudioFocus(this);
+        focused = false;
+        updateMediaSession();
 
     }
 
@@ -331,9 +377,10 @@ public class Player implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCom
      * 结束时清除资源
      */
     public void finish() {
-
+        ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE)).abandonAudioFocus(this);
         context.unregisterReceiver(listener);
 
+        focused = false;
         mediaPlayer.stop();
         mediaPlayer.release();
         mediaPlayer = null;

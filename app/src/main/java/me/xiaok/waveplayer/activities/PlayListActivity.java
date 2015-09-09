@@ -12,10 +12,12 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.adapters.SongAdapter;
 import me.xiaok.waveplayer.models.PlayList;
 import me.xiaok.waveplayer.models.Song;
+import me.xiaok.waveplayer.utils.Navigate;
 
 /**
  * Created by GeeKaven on 15/8/28.
@@ -91,6 +93,12 @@ public class PlayListActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
-
+        switch (view.getId()) {
+            case R.id.fab_play:
+                //将此专辑下的所有歌曲添加到播放队列，并且播放
+                PlayerController.setQueueAndPosition(mSongList, 0);
+                Navigate.to(this, NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, mSongList.get(0));
+                break;
+        }
     }
 }

@@ -1,12 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/navigation_drawer_category"
+        android:checkableBehavior="single">
 
         <item
-            android:id="@+id/nav_library"
-            android:title="@string/nav_library"
-            android:checked="true"/>
+            android:id="@+id/nav_song"
+            android:title="@string/nav_music"
+            android:icon="@mipmap/ic_audiotrack_white_24dp"/>
+        <item
+            android:id="@+id/nav_album"
+            android:title="@string/nav_album"
+            android:icon="@mipmap/ic_album_white_24dp"/>
+        <item
+            android:id="@+id/nav_artist"
+            android:title="@string/nav_artist"
+            android:icon="@mipmap/ic_person_white_24dp"/>
+        <item
+            android:id="@+id/nav_playlist"
+            android:title="@string/nav_playlist"
+            android:icon="@mipmap/ic_queue_music_white_24dp"/>
+        <item
+            android:id="@+id/nav_genres"
+            android:title="@string/nav_genres" />
+    </group>
+
+    <group
+        android:id="@+id/navigation_drawer_other"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_setting"
+            android:title="@string/nav_setting"
+            android:icon="@mipmap/ic_settings_white_24dp"/>
+
         <item
             android:id="@+id/nav_quit"
             android:title="@string/nav_quit"/>
