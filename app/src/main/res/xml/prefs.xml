@@ -4,11 +4,23 @@
     <PreferenceCategory android:title="常规">
         <ListPreference
             android:title="默认页"
-            android:defaultValue="1"
+            android:defaultValue="0"
             android:dialogTitle="默认首页"
             android:entries="@array/pages"
             android:entryValues="@array/page_value"
+            android:summary="@string/setting_default_page_summer"
             android:key="prefDefaultFragment"/>
+        <ListPreference
+            android:title="主题"
+            android:defaultValue="0"
+            android:dialogTitle="主题"
+            android:entries="@array/colors"
+            android:entryValues="@array/color_value"
+            android:summary="@string/setting_color_theme_summer"
+            android:key="prefColorTheme"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="其他">
+
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -50,6 +50,8 @@
     <string name="album">Album</string>
     <string name="song">Song</string>
 
+    <string name="setting_default_page_summer">起始页面</string>
+    <string name="setting_color_theme_summer">主题色调,默认为少女粉</string>
 
     <string-array name="pages">
         <item name="0">歌单</item>

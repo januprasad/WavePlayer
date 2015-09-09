@@ -24,23 +24,22 @@ import me.xiaok.waveplayer.utils.LogUtils;
  */
 public class SongsFragment extends Fragment {
 
-    private static final String TAG = "SongsFragment";
-    private RecyclerView mList;
-    private SongAdapter mAdapter;
+  private static final String TAG = "SongsFragment";
+  private RecyclerView mList;
+  private SongAdapter mAdapter;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.v(TAG, "SongsFragment onCreateView is called");
+  @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
+      Bundle savedInstanceState) {
+    LogUtils.v(TAG, "SongsFragment onCreateView is called");
 
-        View view = inflater.inflate(R.layout.com_list, container, false);
-        mList = (RecyclerView)view.findViewById(R.id.list);
+    View view = inflater.inflate(R.layout.com_list, container, false);
+    mList = (RecyclerView) view.findViewById(R.id.list);
 
-        mAdapter = new SongAdapter(LibManager.getSongs());
-        LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+    mAdapter = new SongAdapter(LibManager.getSongs());
+    LayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
-        mList.setLayoutManager(layoutManager);
-        mList.setAdapter(mAdapter);
-        return view;
-    }
+    mList.setLayoutManager(layoutManager);
+    mList.setAdapter(mAdapter);
+    return view;
+  }
 }

@@ -25,29 +25,26 @@ import me.xiaok.waveplayer.utils.LogUtils;
  */
 public class ArtistsFragment extends Fragment {
 
-    private static final String TAG = "ArtistsFragment";
-    private RecyclerView mList;
-    private ArtistAdapter mAdapter;
+  private static final String TAG = "ArtistsFragment";
+  private RecyclerView mList;
+  private ArtistAdapter mAdapter;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.v(TAG, "ArtistsFragment onCreateView is called");
+  @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
+      Bundle savedInstanceState) {
+    LogUtils.v(TAG, "ArtistsFragment onCreateView is called");
 
-        View view = inflater.inflate(R.layout.com_list, container, false);
-        mList = (RecyclerView) view.findViewById(R.id.list);
+    View view = inflater.inflate(R.layout.com_list, container, false);
+    mList = (RecyclerView) view.findViewById(R.id.list);
 
-        mAdapter = new ArtistAdapter(LibManager.getArtists());
-        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+    mAdapter = new ArtistAdapter(LibManager.getArtists());
+    GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
 
-        mList.setLayoutManager(layoutManager);
-        mList.setAdapter(mAdapter);
-        return view;
-    }
+    mList.setLayoutManager(layoutManager);
+    mList.setAdapter(mAdapter);
+    return view;
+  }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
+  @Override public void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+  }
 }

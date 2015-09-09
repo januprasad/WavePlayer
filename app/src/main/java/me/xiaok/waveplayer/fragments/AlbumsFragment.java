@@ -18,24 +18,23 @@ import me.xiaok.waveplayer.utils.LogUtils;
  * Created by GeeKaven on 15/8/16.
  */
 public class AlbumsFragment extends Fragment {
-    private static final String TAG = "AlbumsFragment";
+  private static final String TAG = "AlbumsFragment";
 
-    private RecyclerView mList;
-    private AlbumAdapter mAdapter;
+  private RecyclerView mList;
+  private AlbumAdapter mAdapter;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.v(TAG, "AlbumsFragment onCreateView is called");
+  @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
+      Bundle savedInstanceState) {
+    LogUtils.v(TAG, "AlbumsFragment onCreateView is called");
 
-        View view = inflater.inflate(R.layout.com_list, container, false);
-        mList = (RecyclerView) view.findViewById(R.id.list);
+    View view = inflater.inflate(R.layout.com_list, container, false);
+    mList = (RecyclerView) view.findViewById(R.id.list);
 
-        mAdapter = new AlbumAdapter(LibManager.getAlbums());
-        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
+    mAdapter = new AlbumAdapter(LibManager.getAlbums());
+    GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
 
-        mList.setLayoutManager(layoutManager);
-        mList.setAdapter(mAdapter);
-        return view;
-    }
+    mList.setLayoutManager(layoutManager);
+    mList.setAdapter(mAdapter);
+    return view;
+  }
 }

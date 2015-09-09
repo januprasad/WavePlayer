@@ -10,46 +10,40 @@ import me.xiaok.waveplayer.R;
  * Created by GeeKaven on 15/9/8.
  */
 public class SettingActivity extends BaseActivity {
-    @Override
-    protected int getLayoutResource() {
-        return R.layout.activity_setting;
-    }
+  @Override protected int getLayoutResource() {
+    return R.layout.activity_setting;
+  }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        mToolBar.setTitle("设置");
-        getFragmentManager().beginTransaction().replace(R.id.container, new PrefsFragment()).commit();
-    }
+    mToolBar.setTitle("设置");
+    getFragmentManager().beginTransaction().replace(R.id.container, new PrefsFragment()).commit();
+  }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+  @Override public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case android.R.id.home:
         finish();
+        return true;
     }
+    return super.onOptionsItemSelected(item);
+  }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
+  @Override protected void onDestroy() {
+    super.onDestroy();
+    finish();
+  }
 
-    public static class PrefsFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.prefs);
-        }
+  @Override public void onBackPressed() {
+    super.onBackPressed();
+    finish();
+  }
+
+  public static class PrefsFragment extends PreferenceFragment {
+    @Override public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      addPreferencesFromResource(R.xml.prefs);
     }
+  }
 }

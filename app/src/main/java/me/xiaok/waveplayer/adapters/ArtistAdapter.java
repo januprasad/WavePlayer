@@ -17,26 +17,23 @@ import me.xiaok.waveplayer.models.viewholders.ArtistViewHolder;
  */
 public class ArtistAdapter extends RecyclerView.Adapter<ArtistViewHolder> {
 
-    private ArrayList<Artist> mArtistList;
+  private ArrayList<Artist> mArtistList;
 
-    public ArtistAdapter(ArrayList<Artist> artistList) {
-        this.mArtistList = artistList;
-    }
+  public ArtistAdapter(ArrayList<Artist> artistList) {
+    this.mArtistList = artistList;
+  }
 
-    @Override
-    public void onBindViewHolder(ArtistViewHolder holder, int position) {
-        holder.updateViewHolder(mArtistList.get(position));
-    }
+  @Override public void onBindViewHolder(ArtistViewHolder holder, int position) {
+    holder.updateViewHolder(mArtistList.get(position));
+  }
 
-    @Override
-    public ArtistViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ArtistViewHolder holder = new ArtistViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_grid, parent, false));
-        return holder;
-    }
+  @Override public ArtistViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    ArtistViewHolder holder = new ArtistViewHolder(
+        LayoutInflater.from(parent.getContext()).inflate(R.layout.item_grid, parent, false));
+    return holder;
+  }
 
-    @Override
-    public int getItemCount() {
-        return mArtistList.size();
-    }
+  @Override public int getItemCount() {
+    return mArtistList.size();
+  }
 }

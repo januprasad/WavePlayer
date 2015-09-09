@@ -15,26 +15,23 @@ import me.xiaok.waveplayer.models.viewholders.GenreViewHolder;
  */
 public class GenreAdapter extends RecyclerView.Adapter<GenreViewHolder> {
 
-    private ArrayList<Genre> mGenreList;
+  private ArrayList<Genre> mGenreList;
 
-    public GenreAdapter(ArrayList<Genre> genreList) {
-        this.mGenreList = genreList;
-    }
+  public GenreAdapter(ArrayList<Genre> genreList) {
+    this.mGenreList = genreList;
+  }
 
-    @Override
-    public GenreViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        GenreViewHolder holder = new GenreViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_grid, parent, false));
-        return holder;
-    }
+  @Override public GenreViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    GenreViewHolder holder = new GenreViewHolder(
+        LayoutInflater.from(parent.getContext()).inflate(R.layout.item_grid, parent, false));
+    return holder;
+  }
 
-    @Override
-    public void onBindViewHolder(GenreViewHolder holder, int position) {
-        holder.updateViewHolder(mGenreList.get(position));
-    }
+  @Override public void onBindViewHolder(GenreViewHolder holder, int position) {
+    holder.updateViewHolder(mGenreList.get(position));
+  }
 
-    @Override
-    public int getItemCount() {
-        return mGenreList.size();
-    }
+  @Override public int getItemCount() {
+    return mGenreList.size();
+  }
 }

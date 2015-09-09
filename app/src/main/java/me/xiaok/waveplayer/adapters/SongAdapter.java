@@ -15,34 +15,31 @@ import me.xiaok.waveplayer.models.viewholders.SongViewHolder;
  */
 public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
 
-    private ArrayList<Song> mSongList;
-    private boolean showIcon = true;
+  private ArrayList<Song> mSongList;
+  private boolean showIcon = true;
 
-    public SongAdapter(ArrayList<Song> songList) {
-        this.mSongList = songList;
-    }
+  public SongAdapter(ArrayList<Song> songList) {
+    this.mSongList = songList;
+  }
 
-    public SongAdapter(ArrayList<Song> songList, boolean flag) {
-        this.mSongList = songList;
-        this.showIcon = flag;
-    }
+  public SongAdapter(ArrayList<Song> songList, boolean flag) {
+    this.mSongList = songList;
+    this.showIcon = flag;
+  }
 
-    @Override
-    public int getItemCount() {
-        return mSongList.size();
-    }
+  @Override public int getItemCount() {
+    return mSongList.size();
+  }
 
-    @Override
-    public void onBindViewHolder(SongViewHolder holder, int position) {
-        Song s = mSongList.get(position);
-        holder.updateViewHolder(s, showIcon, position);
-    }
+  @Override public void onBindViewHolder(SongViewHolder holder, int position) {
+    Song s = mSongList.get(position);
+    holder.updateViewHolder(s, showIcon, position);
+  }
 
-    @Override
-    public SongViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        SongViewHolder holder = new SongViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_song, parent, false));
-        holder.setSongList(mSongList);
-        return holder;
-    }
+  @Override public SongViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    SongViewHolder holder = new SongViewHolder(
+        LayoutInflater.from(parent.getContext()).inflate(R.layout.item_song, parent, false));
+    holder.setSongList(mSongList);
+    return holder;
+  }
 }
