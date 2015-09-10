@@ -100,8 +100,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder
       case R.id.root:
         PlayerController.setQueueAndPosition(mSongList, position);
         PlayerController.begin();
-        Navigate.to(itemView.getContext(), NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING,
-            ref);
+        Navigate.to(itemView.getContext(), NowPlayingMusic.class);
         break;
       case R.id.click_more:
         PopupMenu popupMenu = new PopupMenu(itemView.getContext(), mClickMore, Gravity.END);

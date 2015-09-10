@@ -3,6 +3,7 @@ package me.xiaok.waveplayer.activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,8 +32,6 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
 
   public static final String TAG = "NowPlayingMusic";
 
-  public static final String EXTRA_NOW_PLAYING = "extra_NowPlayingMusic";
-
   private Song song;
   private SeekBar mSeekBar;
   private SimpleDraweeView mSongImg;
@@ -56,8 +55,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    Intent intent = getIntent();
-    song = intent.getExtras().getParcelable(EXTRA_NOW_PLAYING);
+    song = PlayerController.getNowPlaying();
 
     setupInstance();
 
@@ -138,22 +136,25 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
     mPrevious = (ImageView) findViewById(R.id.control_previous);
     mReflectedImage = (ImageView) findViewById(R.id.reflected_image);
 
-    mSongTitle.setText(song.getmSongName());
-    mSongInfo.setText(song.getmArtistName() + "|" + song.getmAblumName());
-    Bitmap reflectedImage;
-    if (FetchUtils.fetchAlbumArtLocal(song.getmAlbumId()) == null) {
-      reflectedImage = MusicUtils.createReflectedImage(
-          BitmapFactory.decodeResource(getResources(), R.mipmap.default_artwork));
-    } else {
-      mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(song.getmAlbumId()));
-      reflectedImage =
-          MusicUtils.createReflectedImage(FetchUtils.fetchAlbumArtLocal(song.getmAlbumId()));
-    }
-    mReflectedImage.setImageBitmap(reflectedImage);
     mTogglePlay.setOnClickListener(this);
     mNext.setOnClickListener(this);
     mPrevious.setOnClickListener(this);
     mSeekBar.setOnSeekBarChangeListener(new SeekBarChangeListener());
+
+    if (song != null) {
+      mSongTitle.setText(song.getmSongName());
+      mSongInfo.setText(song.getmArtistName() + "|" + song.getmAblumName());
+      Bitmap reflectedImage;
+      if (FetchUtils.fetchAlbumArtLocal(song.getmAlbumId()) == null) {
+        reflectedImage = MusicUtils.createReflectedImage(BitmapFactory.decodeResource(getResources(), R.mipmap.default_artwork));
+      } else {
+        mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(song.getmAlbumId()));
+        reflectedImage = MusicUtils.createReflectedImage(FetchUtils.fetchAlbumArtLocal(song.getmAlbumId()));
+      }
+      mReflectedImage.setImageBitmap(reflectedImage);
+
+      mSeekBar.setMax((int) PlayerController.getDuration());
+    }
   }
 
   @Override public void onClick(View view) {
@@ -196,10 +197,10 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
             reflectedImage = MusicUtils.createReflectedImage(
                 BitmapFactory.decodeResource(getResources(), R.mipmap.default_artwork));
           } else {
-            mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(song.getmAlbumId()));
             reflectedImage =
                 MusicUtils.createReflectedImage(FetchUtils.fetchAlbumArtLocal(song.getmAlbumId()));
           }
+          mSongImg.setImageURI(FetchUtils.fetchArtByAlbumId(song.getmAlbumId()));
           mReflectedImage.setImageBitmap(reflectedImage);
           mSongTitle.setText(song.getmSongName());
           mSongInfo.setText(song.getmArtistName() + " | " + song.getmAblumName());

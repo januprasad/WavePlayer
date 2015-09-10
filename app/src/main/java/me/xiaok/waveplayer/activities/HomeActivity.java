@@ -227,8 +227,7 @@ public class HomeActivity extends BaseActivity
           img.setImageURI(FetchUtils.fetchArtByAlbumId(song.getmAlbumId()));
           img.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-              Navigate.to(HomeActivity.this, NowPlayingMusic.class,
-                  NowPlayingMusic.EXTRA_NOW_PLAYING, song);
+              Navigate.to(HomeActivity.this, NowPlayingMusic.class);
             }
           });
           mNavigationView.addHeaderView(view);

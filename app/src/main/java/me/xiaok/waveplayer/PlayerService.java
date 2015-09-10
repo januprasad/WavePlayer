@@ -96,9 +96,6 @@ public class PlayerService extends Service {
     Intent intent = new Intent(getInstance(), Listener.class);
 
     Intent nowPlayingIntent = new Intent(context, NowPlayingMusic.class);
-    Bundle bundle = new Bundle();
-    bundle.putParcelable(NowPlayingMusic.EXTRA_NOW_PLAYING, getInstance().player.getNowPlaying());
-    nowPlayingIntent.putExtras(bundle);
 
     notification.setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(0, 1, 2))
         .setColor(context.getResources().getColor(R.color.grid_default_background))
