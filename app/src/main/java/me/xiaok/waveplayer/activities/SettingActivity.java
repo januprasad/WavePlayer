@@ -18,6 +18,7 @@ public class SettingActivity extends BaseActivity {
     super.onCreate(savedInstanceState);
 
     mToolBar.setTitle("设置");
+    setSupportActionBar(mToolBar);
     getFragmentManager().beginTransaction().replace(R.id.container, new PrefsFragment()).commit();
   }
 

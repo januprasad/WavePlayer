@@ -1,5 +1,6 @@
 package me.xiaok.waveplayer.activities;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -9,10 +10,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import me.xiaok.waveplayer.NowPlayingMusic1;
+import android.view.View;
+import android.widget.TextView;
+import com.facebook.drawee.view.SimpleDraweeView;
+import me.xiaok.waveplayer.Player;
 import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.fragments.AlbumsFragment;
@@ -20,6 +25,9 @@ import me.xiaok.waveplayer.fragments.ArtistsFragment;
 import me.xiaok.waveplayer.fragments.GenreFragment;
 import me.xiaok.waveplayer.fragments.PlayListFragment;
 import me.xiaok.waveplayer.fragments.SongsFragment;
+import me.xiaok.waveplayer.models.Song;
+import me.xiaok.waveplayer.utils.FetchUtils;
+import me.xiaok.waveplayer.utils.LogUtils;
 import me.xiaok.waveplayer.utils.Navigate;
 
 /**
@@ -36,6 +44,8 @@ public class HomeActivity extends BaseActivity
   private NavigationView mNavigationView;
   public ViewPager pager;
   public CustomPagerAdapter mAdapter;
+  private Song currentRef = null;
+  private View lastHeaderView;
 
   @Override protected int getLayoutResource() {
     return R.layout.activity_home;
@@ -62,9 +72,8 @@ public class HomeActivity extends BaseActivity
         mDrawerLayout.openDrawer(GravityCompat.START);
         return true;
       case R.id.action_scan:
-        //                Navigate.to(this, NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, info.song);
-        //                refreshLibrary();
-        Navigate.to(this, NowPlayingMusic1.class);
+        // Navigate.to(this, NowPlayingMusic.class, NowPlayingMusic.EXTRA_NOW_PLAYING, info.song);
+        // refreshLibrary();
         return true;
     }
     return super.onOptionsItemSelected(item);
@@ -199,6 +208,38 @@ public class HomeActivity extends BaseActivity
         default:
           return "tab: " + position;
       }
+    }
+  }
+
+  @Override public void updateHead() {
+    Player.Info info = PlayerController.getInfo();
+    if (info != null) {
+      final Song song = PlayerController.getNowPlaying();
+      if (song != null) {
+        if (!song.equals(currentRef)) {
+          mNavigationView.removeHeaderView(lastHeaderView);
+          View view = LayoutInflater.from(this).inflate(R.layout.nav_head, mNavigationView, false);
+          SimpleDraweeView img = (SimpleDraweeView) view.findViewById(R.id.head_img);
+          TextView headTitle = (TextView) view.findViewById(R.id.head_title);
+          TextView headText = (TextView) view.findViewById(R.id.head_text);
+          headTitle.setText(song.getmSongName());
+          headText.setText(song.getmArtistName());
+          img.setImageURI(FetchUtils.fetchArtByAlbumId(song.getmAlbumId()));
+          img.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+              Navigate.to(HomeActivity.this, NowPlayingMusic.class,
+                  NowPlayingMusic.EXTRA_NOW_PLAYING, song);
+            }
+          });
+          mNavigationView.addHeaderView(view);
+          lastHeaderView = view;
+          currentRef = song;
+        }
+      }
+    } else {
+      View view = LayoutInflater.from(this).inflate(R.layout.nav_head, mNavigationView, false);
+      mNavigationView.addHeaderView(view);
+      lastHeaderView = view;
     }
   }
 }

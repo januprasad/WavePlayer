@@ -71,14 +71,14 @@ public class MusicUtils {
     matrix.setScale(1, -1);
     //创建倒影图片，大小为原图1/2
     Bitmap reflectedImage =
-        Bitmap.createBitmap(originalImage, 0, height / 2, width, height / 2, matrix, false);
+        Bitmap.createBitmap(originalImage, 0, 0, width, height, matrix, false);
     //创建画布
     Canvas canvas = new Canvas(reflectedImage);
     //创建画笔
     Paint shaderPaint = new Paint();
     //创建线性渐变LinearGradient对象
     LinearGradient shader =
-        new LinearGradient(0, 0, 0, reflectedImage.getHeight(), 0x70ffffff, 0x10ffffff,
+        new LinearGradient(0, 0, 0, (2 *reflectedImage.getHeight()), 0x70ffffff, 0x10ffffff,
             Shader.TileMode.CLAMP);
     //将线性渐变效果画在Canvas上
     shaderPaint.setShader(shader);

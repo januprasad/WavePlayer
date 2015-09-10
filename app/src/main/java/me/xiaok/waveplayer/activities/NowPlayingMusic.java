@@ -128,6 +128,7 @@ public class NowPlayingMusic extends BaseActivity implements View.OnClickListene
    */
   public void setupInstance() {
     mToolBar.setTitle("");
+    setSupportActionBar(mToolBar);
     mSeekBar = (SeekBar) findViewById(R.id.song_seekbar);
     mSongImg = (SimpleDraweeView) findViewById(R.id.song_image);
     mSongTitle = (TextView) findViewById(R.id.song_title);

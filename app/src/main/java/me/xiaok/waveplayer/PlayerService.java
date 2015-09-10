@@ -1,6 +1,5 @@
 package me.xiaok.waveplayer;
 
-import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -14,11 +13,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
-
 import java.util.ArrayList;
-import java.util.List;
-
-import me.xiaok.waveplayer.activities.HomeActivity;
 import me.xiaok.waveplayer.activities.NowPlayingMusic;
 import me.xiaok.waveplayer.models.Song;
 import me.xiaok.waveplayer.utils.LogUtils;

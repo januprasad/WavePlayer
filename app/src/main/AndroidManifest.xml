@@ -35,9 +35,6 @@
         <activity android:name=".activities.SettingActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
 
-        <activity android:name=".NowPlayingMusic1"
-            android:screenOrientation="fullUser"/>
-
         <!-- NowPlayingMusic Activity -->
         <activity android:name=".activities.NowPlayingMusic"
             android:screenOrientation="fullUser" />

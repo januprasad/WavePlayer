@@ -19,12 +19,15 @@ import me.xiaok.waveplayer.Player;
 import me.xiaok.waveplayer.PlayerController;
 import me.xiaok.waveplayer.R;
 import me.xiaok.waveplayer.WaveApplication;
+import me.xiaok.waveplayer.utils.LogUtils;
 import me.xiaok.waveplayer.utils.Navigate;
 
 /**
  * Created by GeeKaven on 15/8/16.
  */
 public abstract class BaseActivity extends AppCompatActivity {
+
+  private static final String TAG = "BaseActivity";
 
   protected AppBarLayout mAppBar;
   protected Toolbar mToolBar;
@@ -62,11 +65,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 
   @Override protected void onResume() {
     super.onResume();
+    LogUtils.i(TAG, "onResume is called");
+    updateHead();
     registerReceiver(receiver, new IntentFilter(Player.UPDATE_SONG_INFO));
   }
 
   @Override protected void onPause() {
     super.onPause();
+    LogUtils.i(TAG, "onPause is called");
     unregisterReceiver(receiver);
   }
 
@@ -84,5 +90,9 @@ public abstract class BaseActivity extends AppCompatActivity {
   };
 
   public void update() {
+  }
+
+  public void updateHead() {
+
   }
 }
